@@ -1,17 +1,17 @@
 /**
  * @external require
  */
-let gulp = require('gulp'),
+var gulp = require('gulp'),
     plumber = require('gulp-plumber'),
     sass = require('gulp-sass'),
     //concat = require('gulp-concat'),
     del = require('del'),
     rename = require('gulp-rename'),
-    // jshint = require('gulp-jshint'),
+    jshint = require('gulp-jshint'),
     //stylish = require('jshint-stylish'),
-    // include = require('gulp-include'),
-    ts = require('gulp-typescript'),
-    merge = require('merge2');
+    include = require('gulp-include');
+    // ts = require('gulp-typescript'),
+    // merge = require('merge2');
 // print = require('gulp-print');
 // replace = require('gulp-replace');
 
@@ -19,34 +19,36 @@ gulp.task('clean', function () {
   del([
     // 'src/build/*.html',
     'build/*',
-    'includes/*',
+    'includes/*'
     // '!src/includes/twigSetup*'
   ]);
 });
 
-// gulp.task('typescript', function () {
-//   return gulp.src(['src/typescript/*.ts'])
-//       .pipe(plumber())
-//       .pipe(jshint())
-//       // .pipe(jshint.reporter('jshint-stylish'))
-//       // .pipe(concat('scripts.inc.typescript', {newLine: '\r\n\r\n'}))
-//       // .pipe(gulp.dest('./includes/'))
-//       .on('end', function () {
-//         gulp.start('include-typescript');
-//       });
-// });
-
-gulp.task('typescript', function () {
-  let tsResult = gulp.src('lib/main.js')
-      .pipe(ts({
-        // declaration: true
-      }));
-
-  return merge([
-    tsResult.dts.pipe(gulp.dest('release/definitions')),
-    tsResult.js.pipe(gulp.dest('release/js'))
-  ]);
+gulp.task('js', function () {
+  return gulp.src(['src/js/**/*.js'])
+      .pipe(plumber())
+      .pipe(print(function(filepath) {
+        return "js check: " + filepath;
+      }))
+      .pipe(jshint())
+      // .pipe(jshint.reporter('jshint-stylish'))
+      // .pipe(gulp.dest('./includes/'))
+      .on('end', function () {
+        gulp.start('include-js');
+      });
 });
+
+// gulp.task('typescript', function () {
+//   var tsResult = gulp.src('lib/main.js')
+//       .pipe(ts({
+//         // declaration: true
+//       }));
+//
+//   return merge([
+//     tsResult.dts.pipe(gulp.dest('release/definitions')),
+//     tsResult.js.pipe(gulp.dest('release/js'))
+//   ]);
+// });
 
 // Nothin special here. Just good ole Sass compiling
 gulp.task('sass', function () {
@@ -71,19 +73,19 @@ gulp.task('move', function () {
  basically just for convenience and restricting changes to single files while
  working on the template.
  */
-// gulp.task('include-typescript', function () {
-//   return gulp.src(['src/typescript/includes.typescript'])
-//       .pipe(plumber())
-//       // .pipe(print(function(filepath) {
-//       //   return "includes-typescript: " + filepath;
-//       // }))
-//       .pipe(include({
-//         extensions: "typescript",
-//         hardFail: true,
-//         // includePaths: "/src/typescript"
-//       }))
-//       .pipe(gulp.dest('./build/'));
-// });
+gulp.task('include-js', function () {
+  return gulp.src(['src/js/includes.js'])
+      .pipe(plumber())
+      // .pipe(print(function(filepath) {
+      //   return "includes-typescript: " + filepath;
+      // }))
+      .pipe(include({
+        extensions: "js",
+        hardFail: true
+        // includePaths: "/src/typescript"
+      }))
+      .pipe(gulp.dest('./build/'));
+});
 // gulp.task('include-sass', function () {
 //   return gulp.src(['src/sass/includes.css'])
 //       .pipe(plumber())

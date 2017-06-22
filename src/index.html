@@ -3,16 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <title>Metadyn Playground</title>
+  <link rel="stylesheet" href="css/buffer.css">
 </head>
 <body>
-  <div id="results_cont">
-
-  </div>
-  <script type="application/javascript" src="../lib/main.js"></script>
-  <script type="application/javascript" src="../lib/scenario_base.js"></script>
-<script type="application/javascript" >
-  let main = new Main();
-  main.registerScenario(new Scenario("base"));
+<div id="results_cont"></div>
+<script type="application/javascript" src="js/mustache.min.js"></script>
+<script type="application/javascript" src="js/utils.js"></script>
+<script type="application/javascript" src="js/main.js"></script>
+<script type="application/javascript" src="js/templates.js"></script>
+<script type="application/javascript" src="js/scenario_base.js"></script>
+<script type="application/javascript" src="js/scenarios/math_max.js"></script>
+<script type="application/javascript" src="js/scenarios/sync_test.js"></script>
+<script type="application/javascript" src="js/scenarios/async_test.js"></script>
+<script type="application/javascript">
+  /** @external metadyn */
+  var main = new metadyn.Main();
+  main.addScenarios(
+      metadyn.SyncTest,
+      metadyn.AsyncTest
+  );
+  setTimeout(main.execute.bind(main), 1000);
 </script>
 </body>
 </html>
