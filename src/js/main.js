@@ -17,7 +17,7 @@ window.metadyn = window.metadyn || {};
      */
     this._pointer = 0;
     /**
-     * @type {Array.<{name:string,time:string}>}
+     * @type {Array.<Result>}
      * @private
      */
     this._results = [];
@@ -27,29 +27,47 @@ window.metadyn = window.metadyn || {};
     this._pointer = 0;
     this._next();
   };
-  Main.prototype.printResults = function () {
-    document.getElementById("results_cont").innerHTML = Mustache.render(metadyn.Templates.mainResults, {results: this._results});
+  /**
+   *
+   * @param {boolean} finished
+   * @private
+   */
+  Main.prototype._printResults = function (finished) {
+    var formattedResults=[];
+    for(var i=0;i<this._results.length;i++){
+      var result = this._results[i];
+      formattedResults.push({
+        name:result.name,
+        min:result.min.toFixed(2),
+        max:result.max.toFixed(2),
+        average:result.average.toFixed(2),
+        deviation:result.deviation.toFixed(2)
+      });
+    }
+    document.getElementById("results_cont").innerHTML = Mustache.render(metadyn.Templates.mainResults, {
+      results: formattedResults,
+      finished: finished
+    });
   };
   Main.prototype._next = function () {
     if (this._pointer === this._scenarios.length) {
-      console.log("printing results");
-      this.printResults();
-    } else {
-      /** @type {Scenario} */
-      var scenario = this._scenarios[this._pointer];
-      var self = this;
-      console.log("starting scenario " + scenario.name);
-      scenario.execute(function (time) {
-        self._results.push({name: scenario.name, time: time.toFixed(2)});
-        console.log("scenario " + scenario.name + " finished");
-        self._pointer++;
-        self._next();
-      });
+      this._printResults(true);
+      return;
     }
+    /** @type {Scenario} */
+    var scenario = this._scenarios[this._pointer];
+    var self = this;
+    scenario.execute(function (results) {
+      self._results.push(results);
+      self._printResults(false);
+      self._pointer++;
+      self._next();
+    });
+
   };
 
   Main.prototype.addScenarios = function () {
-    for(var i=0;i<arguments.length;i++){
+    for (var i = 0; i < arguments.length; i++) {
       this._scenarios.push(new arguments[i]());
     }
   };

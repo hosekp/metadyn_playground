@@ -1,10 +1,6 @@
 .result_label {
-    display: inline-block;
-    width: 200px;
 }
 
 .result_value {
     font-weight: bold;
-    display: inline-block;
-    width: 200px;
 }

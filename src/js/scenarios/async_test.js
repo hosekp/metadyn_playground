@@ -10,11 +10,11 @@
 
   var proto = AsyncTest.prototype;
   proto.name = "Async test";
-  proto.repeats = 3;
+  proto.repeats = 30;
   proto.asyncScenario = function asyncTest(callback) {
     setTimeout(function () {
       callback()
-    }, 1000);
+    }, 100);
   };
 
   metadyn.AsyncTest = AsyncTest;

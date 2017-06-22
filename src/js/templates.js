@@ -7,13 +7,30 @@ window.metadyn = window.metadyn || {};
    */
   function Templates() {
   }
+
   metadyn.Templates = Templates;
 
   Templates.mainResults = '\
+    <table>\
+    <tr>\
+      <th>Name</th>\
+      <th>Average</th>\
+      <th>Deviation</th>\
+      <th>Min</th>\
+      <th>Max</th>\
+    </tr>\
     {{#results}}\
-      <div class="result_line">\
-        <span class="result_label">{{name}}:</span><span class="result_value">{{time}} ms</span>\
-      </div>\
+      <tr class="result_line">\
+        <td class="result_label">{{name}}:</td>\
+        <td class="result_value">{{average}}</td>\
+        <td>± {{deviation}} ms</td>\
+        <td>{{min}}</td>\
+        <td>{{max}}</td>\
+      </tr>\
     {{/results}}\
+    </table>\
+    {{#finished}}\
+      All Scenarios finished\
+    {{/finished}}\
   ';
 })();
