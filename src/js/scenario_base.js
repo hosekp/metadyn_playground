@@ -1,7 +1,7 @@
 (function () {
   /**
    * @typedef {Object} Result
-   * @property {String} name
+   * @property {Scenario} scenario
    * @property {number} average
    * @property {number} deviation
    * @property {number} min
@@ -23,9 +23,18 @@
    * @property {string} name
    * @property {boolean} isAsync
    * @property {number} repeats
+   * @property {String} name
+   * @property {number} repeats
+   * @property {String} category
    * @constructor
+   * @param {String} name
+   * @param {number} repeats
+   * @param {String} category
    */
-  function Scenario() {
+  function Scenario(name, repeats,category) {
+    this.name = name;
+    this.repeats = repeats;
+    this.category = category;
   }
 
   var emptyFunction = function () {
@@ -71,7 +80,7 @@
       }
       var repeats = this.repeats;
       return callback({
-        name: this.name,
+        scenario: this,
         max: max,
         min: min,
         average: sum / repeats,
@@ -105,7 +114,7 @@
     if (options.repeatId === this.repeats) {
       var repeats = this.repeats;
       return options.finalCallback({
-        name: this.name,
+        scenario: this,
         max: options.max,
         min: options.min,
         average: options.sum / repeats,

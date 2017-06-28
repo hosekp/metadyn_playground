@@ -33,19 +33,29 @@ window.metadyn = window.metadyn || {};
    * @private
    */
   Main.prototype._printResults = function (finished) {
-    var formattedResults=[];
-    for(var i=0;i<this._results.length;i++){
+    var formattedResults = [];
+    var resultMap = {};
+    for (var i = 0; i < this._results.length; i++) {
       var result = this._results[i];
-      formattedResults.push({
-        name:result.name,
-        min:result.min.toFixed(2),
-        max:result.max.toFixed(2),
-        average:result.average.toFixed(2),
-        deviation:result.deviation.toFixed(2)
-      });
+      var formattedResult = {
+        name: result.scenario.name,
+        min: result.min.toFixed(2),
+        max: result.max.toFixed(2),
+        average: result.average.toFixed(2),
+        deviation: result.deviation.toFixed(2),
+        whole: (result.average * result.scenario.repeats).toFixed(2)
+      };
+      if (!resultMap[result.scenario.category]) {
+        resultMap[result.scenario.category] = [];
+        formattedResults.push({
+          name: result.scenario.category,
+          results: resultMap[result.scenario.category]
+        });
+      }
+      resultMap[result.scenario.category].push(formattedResult);
     }
     document.getElementById("results_cont").innerHTML = Mustache.render(metadyn.Templates.mainResults, {
-      results: formattedResults,
+      categories: formattedResults,
       finished: finished
     });
   };
@@ -68,7 +78,7 @@ window.metadyn = window.metadyn || {};
 
   Main.prototype.addScenarios = function () {
     for (var i = 0; i < arguments.length; i++) {
-      this._scenarios.push(new arguments[i]());
+      this._scenarios.push(arguments[i]);
     }
   };
   metadyn.Main = Main;

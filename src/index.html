@@ -21,14 +21,12 @@
   /** @external metadyn */
   var main = new metadyn.Main();
   main.addScenarios(
-      metadyn.MathMaxArray,
-      metadyn.MathMaxTA,
+//      metadyn.syncTest,
+//      metadyn.asyncTest
+      metadyn.mathMaxArray,
+      metadyn.mathMaxTA,
       metadyn.TAReduceGreater
   );
-//  main.addScenarios(
-//      metadyn.SyncTest,
-//      metadyn.AsyncTest
-//  );
   setTimeout(main.execute.bind(main), 1000);
 </script>
 </body>

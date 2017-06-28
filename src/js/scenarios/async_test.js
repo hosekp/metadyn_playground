@@ -1,21 +1,13 @@
 (function () {
-  /**
-   * @extends {Scenario}
-   * @constructor
-   */
-  function AsyncTest() {
-  }
-
-  metadyn.utils.extendClass(AsyncTest, metadyn.Scenario);
-
-  var proto = AsyncTest.prototype;
-  proto.name = "Async test";
-  proto.repeats = 30;
-  proto.asyncScenario = function asyncTest(callback) {
+  var scenario = new metadyn.Scenario("Async test",30,'Basic');
+  scenario.asyncScenario = function asyncTest(callback) {
     setTimeout(function () {
       callback()
     }, 100);
   };
-
-  metadyn.AsyncTest = AsyncTest;
+  /**
+   *
+   * @type {Scenario}
+   */
+  metadyn.asyncTest = scenario;
 })();
