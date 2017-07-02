@@ -31,7 +31,7 @@
    * @param {number} repeats
    * @param {String} category
    */
-  function Scenario(name, repeats,category) {
+  function Scenario(name, repeats, category) {
     this.name = name;
     this.repeats = repeats;
     this.category = category;

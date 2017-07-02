@@ -67,13 +67,15 @@ window.metadyn = window.metadyn || {};
     /** @type {Scenario} */
     var scenario = this._scenarios[this._pointer];
     var self = this;
-    scenario.execute(function (results) {
+    var callback = function (results) {
       self._results.push(results);
       self._printResults(false);
       self._pointer++;
       self._next();
-    });
-
+    };
+    setTimeout(function () {
+      scenario.execute(callback);
+    }, 0);
   };
 
   Main.prototype.addScenarios = function () {
