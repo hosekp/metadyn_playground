@@ -20,6 +20,7 @@
 <script type="application/javascript" src="js/scenarios/add_gaussian.js"></script>
 <script type="application/javascript" src="js/scenarios/add_gaussian_optimized.js"></script>
 <script type="application/javascript" src="js/scenarios/add_gaussian_ta.js"></script>
+<script type="application/javascript" src="js/scenarios/add_blob_whole.js"></script>
 <script type="application/javascript">
   /** @external metadyn */
   var main = new metadyn.Main();
@@ -31,7 +32,8 @@
 //      metadyn.TAReduceGreater,
       metadyn.addGaussian,
       metadyn.addGaussianOptimized,
-      metadyn.addGaussianTa
+      metadyn.addGaussianTa,
+      metadyn.addBlobWhole
   );
   setTimeout(main.execute.bind(main), 1000);
 </script>
