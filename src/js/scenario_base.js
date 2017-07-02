@@ -41,9 +41,6 @@
   };
   var emptyCallbackFunction = function () {
   };
-
-  Scenario.prototype.name = "default Scenario";
-  Scenario.prototype.repeats = 3;
   /**
    *
    * @param {ScenarioFinished} callback

@@ -17,15 +17,21 @@
 <script type="application/javascript" src="js/scenarios/sync_test.js"></script>
 <script type="application/javascript" src="js/scenarios/async_test.js"></script>
 <script type="application/javascript" src="js/scenarios/ta_reduce_greater.js"></script>
+<script type="application/javascript" src="js/scenarios/add_gaussian.js"></script>
+<script type="application/javascript" src="js/scenarios/add_gaussian_optimized.js"></script>
+<script type="application/javascript" src="js/scenarios/add_gaussian_ta.js"></script>
 <script type="application/javascript">
   /** @external metadyn */
   var main = new metadyn.Main();
   main.addScenarios(
 //      metadyn.syncTest,
 //      metadyn.asyncTest
-      metadyn.mathMaxArray,
-      metadyn.mathMaxTA,
-      metadyn.TAReduceGreater
+//      metadyn.mathMaxArray,
+//      metadyn.mathMaxTA,
+//      metadyn.TAReduceGreater,
+      metadyn.addGaussian,
+      metadyn.addGaussianOptimized,
+      metadyn.addGaussianTa
   );
   setTimeout(main.execute.bind(main), 1000);
 </script>
