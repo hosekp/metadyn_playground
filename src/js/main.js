@@ -79,6 +79,7 @@ window.metadyn = window.metadyn || {};
   };
 
   Main.prototype.addScenarios = function () {
+    if (arguments.length && arguments[0] === false) return;
     for (var i = 0; i < arguments.length; i++) {
       this._scenarios.push(arguments[i]);
     }

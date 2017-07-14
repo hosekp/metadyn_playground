@@ -1,0 +1,74 @@
+precision mediump float;
+precision mediump int;
+varying vec2 v_texCoord;
+
+uniform sampler2D mainTex;
+uniform sampler2D blobTex;
+uniform bvec2 periods;
+uniform vec3 pos;
+
+vec4 compute(){
+    vec2 blobpos = v_texCoord-pos.xy+vec2(0.5,0.5);
+    vec4 outputVec=texture2D(mainTex, v_texCoord);
+    if(blobpos.x<0.0){
+        if(periods.x){
+            blobpos.x+=1.0;
+        }else{
+            return outputVec;
+        }
+    }else if(blobpos.x>1.0){
+        if(periods.x){
+            blobpos.x-=1.0;
+        }else{
+            return outputVec;
+        }
+    }
+    if(blobpos.y<0.0){
+        if(periods.y){
+            blobpos.y+=1.0;
+        }else{
+            return outputVec;
+        }
+    }else if(blobpos.y>1.0){
+        if(periods.y){
+            blobpos.y-=1.0;
+        }else{
+            return outputVec;
+        }
+    }
+    if(pos.z==1.0){
+        outputVec = texture2D(mainTex, v_texCoord)+texture2D(blobTex, blobpos);
+    }else{
+        vec4 heiblob=texture2D(blobTex, blobpos)*pos.z;
+        outputVec = texture2D(mainTex, v_texCoord)+heiblob;
+        float n=fract(outputVec.w*255.0)/255.0;
+        outputVec.z+=n*256.0;outputVec.w-=n;
+              n=fract(outputVec.z*255.0)/255.0;
+        outputVec.y+=n*256.0;outputVec.z-=n;
+              n=fract(outputVec.y*255.0)/255.0;
+        outputVec.x+=n*256.0;outputVec.y-=n;
+    }
+    
+    if(outputVec.x>1.0){
+        float d=floor(outputVec.x);
+        outputVec.x-=d*256.0/255.0;
+        outputVec.y+=d/255.0;
+    }
+    if(outputVec.y>1.0){
+        float d=floor(outputVec.y);
+        outputVec.y-=d*256.0/255.0;
+        outputVec.z+=d/255.0;
+    }
+    if(outputVec.z>1.0){
+        float d=floor(outputVec.z);
+        outputVec.z-=d*256.0/255.0;
+        outputVec.w+=d/255.0;
+    }
+    if(outputVec.w>1.0){
+        outputVec.w=1.0;
+    }
+    return outputVec;
+}
+void main(void){
+    gl_FragColor = compute();
+}

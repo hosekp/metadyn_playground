@@ -12,24 +12,31 @@
 <script type="application/javascript" src="js/main.js"></script>
 <script type="application/javascript" src="js/templates.js"></script>
 <script type="application/javascript" src="js/scenario_base.js"></script>
-<script type="application/javascript" src="js/scenarios/math_max.js"></script>
-<script type="application/javascript" src="js/scenarios/math_max_ta.js"></script>
 <script type="application/javascript" src="js/scenarios/sync_test.js"></script>
 <script type="application/javascript" src="js/scenarios/async_test.js"></script>
-<script type="application/javascript" src="js/scenarios/ta_reduce_greater.js"></script>
-<script type="application/javascript" src="js/scenarios/add_gaussian.js"></script>
-<script type="application/javascript" src="js/scenarios/add_gaussian_optimized.js"></script>
-<script type="application/javascript" src="js/scenarios/add_gaussian_ta.js"></script>
-<script type="application/javascript" src="js/scenarios/add_blob_whole.js"></script>
+<script type="application/javascript" src="js/scenarios/max/math_max.js"></script>
+<script type="application/javascript" src="js/scenarios/max/math_max_ta.js"></script>
+<script type="application/javascript" src="js/scenarios/max/ta_reduce_greater.js"></script>
+<script type="application/javascript" src="js/scenarios/add/add_gaussian.js"></script>
+<script type="application/javascript" src="js/scenarios/add/add_gaussian_optimized.js"></script>
+<script type="application/javascript" src="js/scenarios/add/add_gaussian_ta.js"></script>
+<script type="application/javascript" src="js/scenarios/add/add_blob_whole.js"></script>
 <script type="application/javascript">
   /** @external metadyn */
   var main = new metadyn.Main();
   main.addScenarios(
-//      metadyn.syncTest,
-//      metadyn.asyncTest
-//      metadyn.mathMaxArray,
-//      metadyn.mathMaxTA,
-//      metadyn.TAReduceGreater,
+//      false,
+      metadyn.syncTest,
+      metadyn.asyncTest
+  );
+  main.addScenarios(
+      false,
+      metadyn.mathMaxArray,
+      metadyn.mathMaxTA,
+      metadyn.TAReduceGreater
+  );
+  main.addScenarios(
+      false,
       metadyn.addGaussian,
       metadyn.addGaussianOptimized,
       metadyn.addGaussianTa,
