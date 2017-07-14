@@ -67,20 +67,45 @@ window.metadyn = window.metadyn || {};
     /** @type {Scenario} */
     var scenario = this._scenarios[this._pointer];
     var self = this;
-    var callback = function (results) {
-      self._results.push(results);
-      self._printResults(false);
-      self._pointer++;
-      self._next();
-    };
-    setTimeout(function () {
-      scenario.execute(callback);
-    }, 0);
+    return scenario.prepareScenario().then(function () {
+      scenario.execute().then(function (results) {
+        self._results.push(results);
+        self._printResults(false);
+        self._pointer++;
+        return self.delay();
+      }).then(function () {
+        self._next();
+      });
+    });
+
+    // return scenario.execute()/*.then(this.delay)*/.then(function (results) {
+    //   self._results.push(results);
+    //   self._printResults(false);
+    //   self._pointer++;
+    //   return self._next();
+    // });
+  };
+  // Main.prototype.handleResultsAndRunNext = function (results) {
+  //   var self = this;
+  //   self._results.push(results);
+  //   self._printResults(false);
+  //   self._pointer++;
+  // };
+
+  Main.prototype.delay = function (results) {
+    new Promise(function (resolve, reject) {
+      setTimeout(function () {
+        resolve(results);
+      }, 0);
+    });
   };
 
   Main.prototype.addScenarios = function () {
     if (arguments.length && arguments[0] === false) return;
     for (var i = 0; i < arguments.length; i++) {
+      if (!arguments[i]) {
+        throw "You forget to include file with " + (i + 1) + ". scenario";
+      }
       this._scenarios.push(arguments[i]);
     }
   };

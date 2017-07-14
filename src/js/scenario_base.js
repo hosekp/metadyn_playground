@@ -1,4 +1,5 @@
 (function () {
+  "use strict";
   /**
    * @typedef {Object} Result
    * @property {Scenario} scenario
@@ -17,7 +18,7 @@
    * @callback AsyncFunction
    * @param {EmptyCallback} callback
    */
-  /** @typedef {{repeatId:number,finalCallback:ScenarioFinished,start:number,prepared?:boolean,min:number,max:number,sum:number,sum2:number}} AsyncOptions */
+  /** @typedef {{repeatId:number,start:number,prepared?:boolean,min:number,max:number,sum:number,sum2:number}} AsyncOptions */
 
   /**
    * @property {string} name
@@ -42,23 +43,24 @@
   var emptyCallbackFunction = function () {
   };
   /**
-   *
-   * @param {ScenarioFinished} callback
-   * @param {AsyncOptions} [options]
+   * @return {Promise}
    */
-  Scenario.prototype.execute = function (callback, options) {
+  Scenario.prototype.prepareScenario = function () {
     if (this.prepare !== emptyFunction) {
       this.prepare();
-    } else if (this.asyncPrepare !== emptyCallbackFunction
-        && !(options && options.prepared)) {
+    } else if (this.asyncPrepare !== emptyCallbackFunction) {
       var self = this;
-      options = {};
-      this.asyncPrepare(function () {
-        options.prepared = true;
-        self.execute(callback);
+      return new Promise(function (p1, p2) {
+        self.asyncPrepare(p1, p2);
       });
-      return;
     }
+    return Promise.resolve();
+  };
+  /**
+   *
+   * @return {Promise}
+   */
+  Scenario.prototype.execute = function () {
     var startTimestamp, endTimestamp;
     if (this.syncScenario !== emptyFunction) {
       var sum = 0;
@@ -76,7 +78,7 @@
         sum2 += diff * diff;
       }
       var repeats = this.repeats;
-      return callback({
+      return Promise.resolve({
         scenario: this,
         max: max,
         min: min,
@@ -84,17 +86,16 @@
         deviation: Math.sqrt(sum2 / repeats - sum * sum / repeats / repeats)
       });
     } else if (this.asyncScenario !== emptyCallbackFunction) {
-      options = {
+      var options = {
         start: 0,
         repeatId: 0,
-        finalCallback: callback,
         prepared: true,
         sum: 0,
         max: 0,
         min: Infinity,
         sum2: 0
       };
-      this._nextRepeat(options);
+      return this._nextRepeat(options);
     } else {
       throw "missing scenario " + this.name;
     }
@@ -105,12 +106,13 @@
   Scenario.prototype.asyncPrepare = emptyCallbackFunction;
   /**
    * @param {AsyncOptions} options
+   * @return {Promise}
    * @private
    */
   Scenario.prototype._nextRepeat = function (options) {
     if (options.repeatId === this.repeats) {
       var repeats = this.repeats;
-      return options.finalCallback({
+      return Promise.resolve({
         scenario: this,
         max: options.max,
         min: options.min,
@@ -121,16 +123,17 @@
     options.repeatId++;
     var self = this;
     options.start = performance.now();
-    this.asyncScenario(function () {
+    return new Promise(function (p1, p2) {
+      return self.asyncScenario(p1, p2);
+    }).then(function () {
       var endTimestamp = performance.now();
       var diff = endTimestamp - options.start;
       options.sum += diff;
       if (options.max < diff) options.max = diff;
       if (options.min > diff) options.min = diff;
       options.sum2 += diff * diff;
-      self._nextRepeat(options);
+      return self._nextRepeat(options);
     });
-
   };
   /** @type {EmptyCallback} */
   Scenario.prototype.syncScenario = emptyFunction;

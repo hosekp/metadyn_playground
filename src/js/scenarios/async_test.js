@@ -15,6 +15,9 @@
     Promise.all([promise1, promise2]).then(callback);
 
   };
+  scenario.asyncPrepare = function (callback) {
+    setTimeout(callback, 100);
+  };
   /**
    *
    * @type {Scenario}

@@ -1,10 +1,39 @@
 (function () {
   "use strict";
-  var scenario = new Scenario("Add WebGL blob", 10000, 'Add');
+  var scenario = new metadyn.Scenario("Add WebGL blob", 10000, 'Add');
 
-  $.extend(scenario, {
-    initShader: function (str, type) {
-
+  metadyn.utils.extend(scenario, {
+    initShader: function (id, type) {
+      var self = this;
+      return this.getShader(id, type).then(function (text) {
+        self.processShader(text, type);
+      });
+    },
+    // getShader: function (id, type) {
+    //   var reader = new FileReader();
+    //   var promise = new Promise(function (resolve, reject) {
+    //     reader.onloadend = function (evt) {
+    //       resolve(evt.target.result);
+    //     };
+    //   });
+    //   var file = new File([""], id + "-" + type + ".shd");
+    //   reader.readAsText(file);
+    //   return promise;
+    // },
+    getShader: function (id, type) {
+      var xobj = new XMLHttpRequest();
+      xobj.overrideMimeType("text");
+      xobj.open('GET', './js/scenarios/add/' + id + '-' + type + '.shd', true); // Replace 'my_data' with the path to your file
+      var promise = new Promise(function (resolve, reject) {
+        xobj.onreadystatechange = function () {
+          if (xobj.readyState === 4 && xobj.status === 200) {
+            // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+            resolve(xobj.responseText);
+          }
+        };
+      });
+      xobj.send(null);
+      return promise;
     },
     processShader: function (str, type) {
       var gl = this.g1, shader;
@@ -29,9 +58,9 @@
       } else {
         return null;
       }
-      if (this.vertex && this.fragment) {
-        this.initProgram();
-      }
+    },
+    loadFailed: function (text) {
+      metadyn.utils.error(text);
     },
     initProgram: function () {
       var gl = this.g1, progr;
@@ -86,23 +115,73 @@
       this.frameTexture = this.createTexture();
       this.frameTexture2 = this.createTexture();
     },
-    getShader: function (id, type) {
-      var reader = new FileReader();
-      var promise = new Promise(function (resolve, reject) {
-        reader.onload = function (evt) {
-          resolve(evt.result);
-        };
-      });
-      reader.readAsText(new File(id + "-" + type + ".shd"));
-      return promise;
+    createTexture: function() {
+      var gl = this.g1,texture;
+      texture = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      //manage.console.debug("createTexture: arg is type "+(typeof typedArray));
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+      return texture;
+    },
+    updateTexture: function(texture,typedArray,width,height){
+      var gl = this.g1;
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,width,height,0, gl.RGBA, gl.UNSIGNED_BYTE, typedArray);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+    },
+    /*creaupdateTexture:function(typedArray,width,height){
+     var gl = this.g1;
+     var texture = gl.createTexture();
+     gl.bindTexture(gl.TEXTURE_2D, texture);
+     //manage.console.debug("createTexture: arg is type "+(typeof typedArray));
+     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,width,height,0, gl.RGBA, gl.UNSIGNED_BYTE, typedArray);
+     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+     gl.bindTexture(gl.TEXTURE_2D, null);
+     return texture;
+     },*/
+    createFramebuffer: function(texture, width, height) {
+      var gl = this.g1,
+          globalRenderBufferId = gl.createRenderbuffer(),
+          globalFbo = gl.createFramebuffer();
+
+      gl.bindRenderbuffer(gl.RENDERBUFFER, globalRenderBufferId);
+      gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
+      gl.isRenderbuffer(globalRenderBufferId);
+      gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+
+      gl.bindFramebuffer(gl.FRAMEBUFFER, globalFbo);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+      gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, globalRenderBufferId);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+
+      return globalFbo;
     },
 
-    prepare: function () {
-      var gl, can = $("<canvas>");
-      gl = can[0].getContext("webgl", {premultipliedAlpha: false}) || can[0].getContext("experimental-webgl", {premultipliedAlpha: false});
+    asyncPrepare: function (callback) {
+      var gl, can = document.createElement("canvas");
+      gl = can.getContext("webgl", {premultipliedAlpha: false}) || can.getContext("experimental-webgl", {premultipliedAlpha: false});
       this.g1 = gl;
-      this.initShader("add2", "vertex");
-      this.initShader("add2", "fragment");
+      var self = this;
+      Promise.all([
+        this.initShader("add2", "vertex"),
+        this.initShader("add2", "fragment")
+      ]).then(function () {
+        self.initProgram();
+      }).then(function () {
+        return callback();
+      });
+    },
+    syncScenario: function () {
+      if (this.leftTexture) {
+        console.log("WebGL inited");
+      } else {
+        this.loadFailed("left texture missing");
+      }
+
     }
   });
 

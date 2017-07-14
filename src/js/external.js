@@ -20,7 +20,15 @@ var Promise = function (promiseFunction) {
 
 };
 /**
+ * @param {Function} callback
+ * @return {*}
+ */
+Promise.prototype.then = function (callback) {
+
+};
+/**
  * @param {Array} array
+ * @return {Promise}
  */
 Promise.all = function (array) {
 

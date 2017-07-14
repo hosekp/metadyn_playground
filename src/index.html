@@ -7,7 +7,9 @@
 </head>
 <body>
 <div id="results_cont"></div>
+<div id="console_cont"></div>
 <script type="application/javascript" src="js/mustache.min.js"></script>
+<script type="application/javascript" src="js/promise.js"></script>
 <script type="application/javascript" src="js/utils.js"></script>
 <script type="application/javascript" src="js/main.js"></script>
 <script type="application/javascript" src="js/templates.js"></script>
@@ -21,6 +23,7 @@
 <script type="application/javascript" src="js/scenarios/add/add_gaussian_optimized.js"></script>
 <script type="application/javascript" src="js/scenarios/add/add_gaussian_ta.js"></script>
 <script type="application/javascript" src="js/scenarios/add/add_blob_whole.js"></script>
+<script type="application/javascript" src="js/scenarios/add/web_gl.js"></script>
 <script type="application/javascript">
   /** @external metadyn */
   var main = new metadyn.Main();
@@ -40,7 +43,8 @@
       metadyn.addGaussian,
       metadyn.addGaussianOptimized,
       metadyn.addGaussianTa,
-      metadyn.addBlobWhole
+      metadyn.addBlobWhole,
+      metadyn.addWebGl
   );
   setTimeout(main.execute.bind(main), 1000);
 </script>
