@@ -1,5 +1,5 @@
 (function () {
-  var scenario = new metadyn.Scenario("Add gaussian optimized", 1000, 'Add');
+  var scenario = new metadyn.Scenario("Add gaussian optimized", 'Add');
   scenario.prepare = function () {
     var data = [];
     data.length = 50000;

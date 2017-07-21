@@ -7,6 +7,7 @@
    * @property {number} deviation
    * @property {number} min
    * @property {number} max
+   * @property {int} repeats
    */
   /**
    * @callback ScenarioFinished
@@ -18,6 +19,7 @@
    * @callback AsyncFunction
    * @param {EmptyCallback} callback
    */
+
   /** @typedef {{repeatId:number,start:number,prepared?:boolean,min:number,max:number,sum:number,sum2:number}} AsyncOptions */
 
   /**
@@ -29,14 +31,14 @@
    * @property {String} category
    * @constructor
    * @param {String} name
-   * @param {number} repeats
    * @param {String} category
    */
-  function Scenario(name, repeats, category) {
+  function Scenario(name, category) {
     this.name = name;
-    this.repeats = repeats;
     this.category = category;
   }
+
+  Scenario.prototype.maxRepeats = 100000;
 
   var emptyFunction = function () {
   };
@@ -67,7 +69,7 @@
       var max = 0;
       var min = Infinity;
       var sum2 = 0;
-      for (var i = 0; i < this.repeats; i++) {
+      for (var i = 0; i < this.maxRepeats; i++) {
         startTimestamp = performance.now();
         this.syncScenario();
         endTimestamp = performance.now();
@@ -76,14 +78,19 @@
         if (max < diff) max = diff;
         if (min > diff) min = diff;
         sum2 += diff * diff;
+        if (sum > 1000) {
+          i++;
+          break;
+        }
       }
-      var repeats = this.repeats;
+      var repeats = i;
       return Promise.resolve({
         scenario: this,
         max: max,
         min: min,
         average: sum / repeats,
-        deviation: Math.sqrt(sum2 / repeats - sum * sum / repeats / repeats)
+        deviation: Math.sqrt(sum2 / repeats - sum * sum / repeats / repeats),
+        repeats: repeats
       });
     } else if (this.asyncScenario !== emptyCallbackFunction) {
       var options = {
@@ -110,14 +117,15 @@
    * @private
    */
   Scenario.prototype._nextRepeat = function (options) {
-    if (options.repeatId === this.repeats) {
-      var repeats = this.repeats;
+    if (options.repeatId === this.maxRepeats || options.sum > 1000) {
+      var repeats = options.repeatId;
       return Promise.resolve({
         scenario: this,
         max: options.max,
         min: options.min,
         average: options.sum / repeats,
-        deviation: Math.sqrt(options.sum2 / repeats - options.sum * options.sum / repeats / repeats)
+        deviation: Math.sqrt(options.sum2 / repeats - options.sum * options.sum / repeats / repeats),
+        repeats: repeats
       });
     }
     options.repeatId++;
@@ -132,8 +140,9 @@
       if (options.max < diff) options.max = diff;
       if (options.min > diff) options.min = diff;
       options.sum2 += diff * diff;
+    }).then(function () {
       return self._nextRepeat(options);
-    });
+    })
   };
   /** @type {EmptyCallback} */
   Scenario.prototype.syncScenario = emptyFunction;
@@ -149,5 +158,8 @@
       throw "Wrong result on " + this.name + ": " + result + " should be " + correct;
     }
   };
+  /** @type {EmptyCallback} */
+  Scenario.prototype.getResults = emptyFunction;
+
   metadyn.Scenario = Scenario;
 })();

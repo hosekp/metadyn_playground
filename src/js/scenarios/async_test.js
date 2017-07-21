@@ -1,6 +1,6 @@
 "use strict";
 (function () {
-  var scenario = new metadyn.Scenario("Async test", 30, 'Basic');
+  var scenario = new metadyn.Scenario("Async test", 'Basic');
   scenario.asyncScenario = function asyncTest(callback) {
     var promise1 = new Promise(function (resolve, reject) {
       setTimeout(function () {

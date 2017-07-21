@@ -1,5 +1,5 @@
 (function () {
-  var scenario = new metadyn.Scenario("TA.reduce(a>b)", 100, 'Max');
+  var scenario = new metadyn.Scenario("TA.reduce(a>b)", 'Max');
   scenario.prepare = function () {
     var buffer = new ArrayBuffer(125000 * 4);
     var int32View = new Int32Array(buffer);

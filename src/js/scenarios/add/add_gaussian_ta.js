@@ -1,5 +1,5 @@
 (function () {
-  var scenario = new metadyn.Scenario("Add gaussian TA", 1000, 'Add');
+  var scenario = new metadyn.Scenario("Add gaussian TA", 'Add');
   scenario.prepare = function () {
     var buffer = new ArrayBuffer(50000*4);
     var int32View = new Float32Array(buffer);

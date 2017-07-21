@@ -1,5 +1,5 @@
 (function () {
-  var scenario = new metadyn.Scenario("Add blob whole", 10000, 'Add');
+  var scenario = new metadyn.Scenario("Add blob whole", 'Add');
   scenario.prepare = function () {
     var data = [];
     data.length = 500000;

@@ -1,8 +1,20 @@
 (function () {
   "use strict";
-  var scenario = new metadyn.Scenario("Add WebGL blob", 10000, 'Add');
-
+  var scenario = new metadyn.Scenario("Add WebGL blob", 'Add');
+  /**
+   * @typedef {{dims:Array.<int>,getArr:Function}} Space
+   */
   metadyn.utils.extend(scenario, {
+    periods: [false, false],
+    last: {
+      width: -1,
+      height: -1,
+      blobarr: null
+    },
+    blobSize: 256,
+    mainSize: 512,
+    g1: null,
+    $can: null,
     initShader: function (id, type) {
       var self = this;
       return this.getShader(id, type).then(function (text) {
@@ -20,6 +32,21 @@
     //   reader.readAsText(file);
     //   return promise;
     // },
+    resize: function (width, height) {
+      if (!this.$can) {
+        return;
+      }
+      //var width=this.$can_cont.width();
+      //var height=this.$can_cont.height();
+      this.$can.width(width);
+      this.$can.height(height);
+      this.$can.attr({width: width, height: height});
+      if (this.g1) {
+        this.g1.viewport(0, 0, width, height);
+      }
+      this.last.width = width;
+      this.last.height = height;
+    },
     getShader: function (id, type) {
       var xobj = new XMLHttpRequest();
       xobj.overrideMimeType("text");
@@ -115,8 +142,8 @@
       this.frameTexture = this.createTexture();
       this.frameTexture2 = this.createTexture();
     },
-    createTexture: function() {
-      var gl = this.g1,texture;
+    createTexture: function () {
+      var gl = this.g1, texture;
       texture = gl.createTexture();
       gl.bindTexture(gl.TEXTURE_2D, texture);
       //manage.console.debug("createTexture: arg is type "+(typeof typedArray));
@@ -125,10 +152,10 @@
       gl.bindTexture(gl.TEXTURE_2D, null);
       return texture;
     },
-    updateTexture: function(texture,typedArray,width,height){
+    updateTexture: function (texture, typedArray, width, height) {
       var gl = this.g1;
       gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,width,height,0, gl.RGBA, gl.UNSIGNED_BYTE, typedArray);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, typedArray);
       gl.bindTexture(gl.TEXTURE_2D, null);
     },
     /*creaupdateTexture:function(typedArray,width,height){
@@ -142,7 +169,7 @@
      gl.bindTexture(gl.TEXTURE_2D, null);
      return texture;
      },*/
-    createFramebuffer: function(texture, width, height) {
+    createFramebuffer: function (texture, width, height) {
       var gl = this.g1,
           globalRenderBufferId = gl.createRenderbuffer(),
           globalFbo = gl.createFramebuffer();
@@ -157,31 +184,177 @@
       gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, globalRenderBufferId);
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-
       return globalFbo;
     },
+    /**
+     *
+     * @param {Space} space1
+     * @param {Space} space2
+     * @param {Array.<boolean>} periods
+     */
+    preadd: function (space1, space2, periods) {
+      //var gl = this.g1,
+      var width, height;
+      this.periods = periods;
+      width = space1.dims[0];
+      height = space1.dims[1];
+      if (width !== this.last.width || height !== this.last.height) {
+        this.resize(width, height);
+        this.pixels = new Uint8Array(width * height * 4);
+        this.updateTexture(this.frameTexture, this.pixels, width, height);
+        this.updateTexture(this.frameTexture2, this.pixels, width, height);
+        this.framebuffer = this.createFramebuffer(this.frameTexture, width, height);
+        this.framebuffer2 = this.createFramebuffer(this.frameTexture2, width, height);
+      }
+      this.updateTexture(this.frameTexture, space1.getArr(), width, height);
+      if (this.last.rightarr !== space2.getArr()) {
+        width = space2.dims[0];
+        height = space2.dims[1];
+        this.updateTexture(this.rightTexture, space2.getArr(), width, height);
+        this.last.rightarr = space2.getArr();
+      }
+      this.tick = true;
+      //gl.bindFramebuffer( gl.FRAMEBUFFER, this.framebuffer);
 
-    asyncPrepare: function (callback) {
+    },
+    /**
+     * @param {Array.<number>} pos
+     */
+    add: function (pos) {
+      //var gl = this.g1;
+      /*if(!this.inited){return null;}
+      var width=space1.dims[0];
+      var height=space1.dims[1];
+      if(width!==this.last.width||height!==this.last.height){
+          manage.console.debug("Gl_summer: resize conducted");
+          this.resize(width,height);
+          this.pixels = new Uint8Array(width* height * 4);
+          this.updateTexture(this.frameTexture,this.pixels,width,height);
+          this.framebuffer = this.createFramebuffer(this.frameTexture, width, height);
+
+      }
+      this.updateTexture(this.leftTexture,space1.getArr(),width,height);
+      if(this.last.rightarr!==space2.getArr()){
+          this.updateTexture(this.rightTexture,space2.getArr(),width,height);
+          this.last.rightarr=space2.getArr();
+      }*/
+      //var leftTexture = this.createTexture(width, height, space1.spacearr);
+      //var rightTexture = this.createTexture(width, height, space2.spacearr);
+
+      if (this.tick) {
+        this.calculateFrame(this.framebuffer2, this.frameTexture, this.rightTexture, pos);
+      } else {
+        this.calculateFrame(this.framebuffer, this.frameTexture2, this.rightTexture, pos);
+      }
+      this.tick = !this.tick;
+      /*gl.bindFramebuffer( gl.FRAMEBUFFER, this.framebuffer);
+      gl.readPixels(0, 0, this.last.width, this.last.height, gl.RGBA, gl.UNSIGNED_BYTE, this.pixels);
+      gl.bindFramebuffer( gl.FRAMEBUFFER, null);
+      this.updateTexture(this.frameTexture,this.pixels,this.last.width, this.last.height);*/
+      //return this.unpackTexture(pixels, width, height, 4);
+    },
+    /**
+     * @param {Space} space1
+     */
+    postadd: function (space1) {
+      var gl = this.g1,
+          width, height;
+      //gl.bindFramebuffer( gl.FRAMEBUFFER, null);
+      width = space1.dims[0];
+      height = space1.dims[1];
+      if (this.tick) {
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
+      } else {
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer2);
+      }
+      gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, space1.getArr());
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+    },
+    calculateFrame: function (framebuffer, textureOne, textureTwo, pos) {
+      var gl = this.g1;
+      gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.coordBuffer);
+      gl.vertexAttribPointer(this.program.positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer);
+      gl.vertexAttribPointer(this.program.texCoordLocation, 2, gl.FLOAT, false, 0, 0);
+
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, textureOne);
+      gl.uniform1i(this.program.mainTexLoc, 0);
+      //gl.uniform1f(this.program.randomUniform, 1);
+
+      gl.activeTexture(gl.TEXTURE1);
+      gl.bindTexture(gl.TEXTURE_2D, textureTwo);
+      gl.uniform1i(this.program.blobTexLoc, 1);
+
+      //manage.console.debug(pos);
+      //manage.console.error("prepos: "+gl.getError());
+      gl.uniform3fv(this.program.posLoc, pos);
+      /*var errcode=gl.getError();
+      for(var prop in gl){
+          if(gl[prop]===errcode){
+              manage.console.error("Pos: "+prop);
+              break;
+          }
+      }*/
+      gl.uniform2f(this.program.periodsLoc, this.periods[0], this.periods[1]);
+      //gl.uniform1f(this.program.canvasWidthLoc, canvasWidth);
+      //gl.uniform1f(this.program.canvasHeightLoc, canvasHeight);
+
+      //gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, BUFFERS.cubeVertexIndexBuffer);
+      //gl.drawElements(gl.TRIANGLES, BUFFERS.cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+
+      //gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+      gl.bindBuffer(gl.ARRAY_BUFFER, null);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    },
+    /**
+     *
+     * @param {int} width
+     * @param {int} height
+     * @return {Space}
+     */
+    createSpace: function (width, height) {
+      var i8arr = new Uint8Array(width, height * 4);
+      return {
+        dims: [width, height], getArr: function () {
+          return i8arr;
+        }
+      }
+    },
+
+    asyncPrepare: function (callback,reject) {
       var gl, can = document.createElement("canvas");
       gl = can.getContext("webgl", {premultipliedAlpha: false}) || can.getContext("experimental-webgl", {premultipliedAlpha: false});
       this.g1 = gl;
+      this.$can = can;
       var self = this;
+
+      this.space1 = this.createSpace(this.mainSize,this.mainSize);
+      this.space2 = this.createSpace(this.blobSize, this.blobSize);
       Promise.all([
         this.initShader("add2", "vertex"),
         this.initShader("add2", "fragment")
       ]).then(function () {
         self.initProgram();
       }).then(function () {
+        if(!self.leftTexture) return reject();
+        this.preadd(self.space1,self.space2,[false,false]);
+
         return callback();
       });
     },
     syncScenario: function () {
-      if (this.leftTexture) {
-        console.log("WebGL inited");
-      } else {
-        this.loadFailed("left texture missing");
-      }
 
+      this.add([]);
+
+      this.postadd(space1);
     }
   });
 

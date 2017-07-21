@@ -43,7 +43,8 @@ window.metadyn = window.metadyn || {};
         max: result.max.toFixed(2),
         average: result.average.toFixed(2),
         deviation: result.deviation.toFixed(2),
-        whole: (result.average * result.scenario.repeats).toFixed(2)
+        whole: (result.average * result.repeats).toFixed(2),
+        repeats: result.repeats
       };
       if (!resultMap[result.scenario.category]) {
         resultMap[result.scenario.category] = [];
@@ -67,33 +68,21 @@ window.metadyn = window.metadyn || {};
     /** @type {Scenario} */
     var scenario = this._scenarios[this._pointer];
     var self = this;
-    return scenario.prepareScenario().then(function () {
-      scenario.execute().then(function (results) {
-        self._results.push(results);
-        self._printResults(false);
-        self._pointer++;
-        return self.delay();
-      }).then(function () {
-        self._next();
-      });
-    });
+    return scenario.prepareScenario()
+        .then(scenario.execute.bind(scenario))
+        .then(function (results) {
+          self._results.push(results);
+          self._printResults(false);
+          self._pointer++;
+        })
+        .then(this.delay.bind(this))
+        .then(this._next.bind(this));
 
-    // return scenario.execute()/*.then(this.delay)*/.then(function (results) {
-    //   self._results.push(results);
-    //   self._printResults(false);
-    //   self._pointer++;
-    //   return self._next();
-    // });
+
   };
-  // Main.prototype.handleResultsAndRunNext = function (results) {
-  //   var self = this;
-  //   self._results.push(results);
-  //   self._printResults(false);
-  //   self._pointer++;
-  // };
 
   Main.prototype.delay = function (results) {
-    new Promise(function (resolve, reject) {
+    return new Promise(function (resolve) {
       setTimeout(function () {
         resolve(results);
       }, 0);
@@ -108,6 +97,37 @@ window.metadyn = window.metadyn || {};
       }
       this._scenarios.push(arguments[i]);
     }
+  };
+
+  Main.prototype.executeTest = function () {
+    var start = window.performance.now();
+    var nowPrint = function () {
+      return (window.performance.now() - start).toFixed(0);
+    };
+    new Promise(function (p1, p2) {
+      setTimeout(p1, 1000);
+    })
+        .then(function () {
+          metadyn.utils.log("First " + nowPrint());
+        })
+        .then(this.delay)
+        .then(function () {
+          metadyn.utils.log("Second " + nowPrint());
+          return 5;
+        })
+        .then(function (val) {
+          return new Promise(function (p1, p2) {
+            setTimeout(function () {
+              p1(val);
+              metadyn.utils.log("Third " + nowPrint());
+            }, 1000);
+          })
+        })
+        .then(this.delay)
+        .then(function (val) {
+          metadyn.utils.log("Forth " + nowPrint());
+          metadyn.utils.log("value = " + val)
+        })
   };
   metadyn.Main = Main;
 })();
