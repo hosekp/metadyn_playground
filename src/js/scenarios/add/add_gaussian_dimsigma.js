@@ -1,5 +1,5 @@
 (function () {
-  var scenario = new metadyn.Scenario("Add gaussian optimized", 'Add');
+  var scenario = new metadyn.Scenario("Add gaussian dimSigma", 'Add');
   metadyn.AddScenario(scenario);
   scenario.prepare = function () {
     var data = [];
@@ -16,10 +16,8 @@
     var height = this.getHeight();
     var dimSigma2 = sigma * sigma * dim * dim;
     for (var i = 0; i < dim; i++) {
-      var ix2 = (i - x) * (i - x);
-      var deltaX = i*dim;
       for (var j = 0; j < dim; j++) {
-        data[deltaX + j] += height * Math.exp(-(ix2 + Math.pow(j - y, 2)) / dimSigma2);
+        data[i*dim + j] += height * Math.exp(-(Math.pow(i - x,2) + Math.pow(j - y, 2)) / dimSigma2);
       }
     }
   };
@@ -27,5 +25,5 @@
     this.compareResult(this.data.length, this.mainSize * this.mainSize);
     this.exportCanvas(this.data);
   };
-  metadyn.addGaussianOptimized = scenario;
+  metadyn.addGaussianDimSigma = scenario;
 })();

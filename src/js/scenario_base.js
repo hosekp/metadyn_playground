@@ -78,7 +78,7 @@
         if (max < diff) max = diff;
         if (min > diff) min = diff;
         sum2 += diff * diff;
-        if (sum > 1000) {
+        if (sum > 1000 && i >= 9 || sum > 5000) {
           i++;
           break;
         }
@@ -117,7 +117,7 @@
    * @private
    */
   Scenario.prototype._nextRepeat = function (options) {
-    if (options.repeatId === this.maxRepeats || options.sum > 1000) {
+    if (options.repeatId === this.maxRepeats || (options.sum > 1000 && options.repeatId >= 10) || options.sum > 5000) {
       var repeats = options.repeatId;
       return Promise.resolve({
         scenario: this,
@@ -148,18 +148,40 @@
   Scenario.prototype.syncScenario = emptyFunction;
   /** @type {AsyncFunction} */
   Scenario.prototype.asyncScenario = emptyCallbackFunction;
+
   /**
-   *
-   * @param {*} result
-   * @param {*} correct
+   * @return {boolean}
    */
-  Scenario.prototype.checkResult = function (result, correct) {
-    if (result !== correct) {
-      throw "Wrong result on " + this.name + ": " + result + " should be " + correct;
-    }
+  Scenario.prototype.checkResult = function () {
+    if (this.getResult === emptyFunction) return false;
+    this.compareResult(this.getResult());
   };
-  /** @type {EmptyCallback} */
-  Scenario.prototype.getResults = emptyFunction;
+  Scenario.prototype.compareResult = function (result, correct) {
+    correct = correct || this.correctResult;
+    if (correct === null) return false;
+    if (!result) {
+      throw this.name + ": result is " + result;
+    }
+    if (result === correct) return true;
+    if (result.length) {
+      if (result.length !== correct.length) {
+        throw this.name + ": result.length is different (" + result.length + "!=" + correct.length + ")";
+      }
+      for (var i = 0; i < result.length; i++) {
+        if (result[i] !== correct[i]) {
+          throw this.name + ": value at " + i + " is different (" + result[i] + "!=" + correct[i] + ")";
+        }
+      }
+      return true;
+    }
+    throw this.name + ": " + result + " should be " + correct;
+  };
+
+  Scenario.prototype.getResult = function () {
+    return this.data;
+  };
+
+  Scenario.prototype.correctResult = null;
 
   metadyn.Scenario = Scenario;
 })();

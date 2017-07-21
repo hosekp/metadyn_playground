@@ -4,6 +4,7 @@
   /**
    * @typedef {{dims:Array.<int>,getArr:Function}} Space
    */
+  metadyn.AddScenario(scenario);
   metadyn.utils.extend(scenario, {
     periods: [false, false],
     last: {
@@ -11,10 +12,8 @@
       height: -1,
       blobarr: null
     },
-    blobSize: 256,
-    mainSize: 512,
     g1: null,
-    $can: null,
+    canvas: null,
     initShader: function (id, type) {
       var self = this;
       return this.getShader(id, type).then(function (text) {
@@ -33,14 +32,18 @@
     //   return promise;
     // },
     resize: function (width, height) {
-      if (!this.$can) {
+      if (!this.canvas) {
         return;
       }
       //var width=this.$can_cont.width();
       //var height=this.$can_cont.height();
-      this.$can.width(width);
-      this.$can.height(height);
-      this.$can.attr({width: width, height: height});
+      /** @type {HTMLCanvasElement} */
+      var canvas = this.canvas;
+      canvas.style.width = width+"px";
+      canvas.style.height = height+"px";
+      canvas.setAttribute("width",width);
+      canvas.setAttribute("height",height);
+
       if (this.g1) {
         this.g1.viewport(0, 0, width, height);
       }
@@ -321,40 +324,46 @@
      * @return {Space}
      */
     createSpace: function (width, height) {
-      var i8arr = new Uint8Array(width, height * 4);
+      var i8arr = new Uint8Array(width * height * 4);
+      var i32arr=new Uint32Array(i8arr.buffer);
       return {
-        dims: [width, height], getArr: function () {
+        dims: [width, height], getArr: function (len) {
+          if(len===32) return i32arr;
           return i8arr;
         }
       }
     },
 
-    asyncPrepare: function (callback,reject) {
+    asyncPrepare: function (callback, reject) {
       var gl, can = document.createElement("canvas");
       gl = can.getContext("webgl", {premultipliedAlpha: false}) || can.getContext("experimental-webgl", {premultipliedAlpha: false});
       this.g1 = gl;
-      this.$can = can;
+      this.canvas = can;
       var self = this;
 
-      this.space1 = this.createSpace(this.mainSize,this.mainSize);
+      this.space1 = this.createSpace(this.mainSize, this.mainSize);
       this.space2 = this.createSpace(this.blobSize, this.blobSize);
+      this.populateBlob(this.space2.getArr(32),16384);
       Promise.all([
         this.initShader("add2", "vertex"),
         this.initShader("add2", "fragment")
       ]).then(function () {
         self.initProgram();
       }).then(function () {
-        if(!self.leftTexture) return reject();
-        this.preadd(self.space1,self.space2,[false,false]);
-
+        if (!self.leftTexture) return reject();
+        self.preadd(self.space1, self.space2, [false, false]);
         return callback();
       });
     },
     syncScenario: function () {
-
-      this.add([]);
-
-      this.postadd(space1);
+      this.add([this.getX(), this.getY(), this.getHeight()]);
+    },
+    getResult: function () {
+      this.postadd(this.space1);
+      return this.space1.getArr()
+    },
+    checkResult: function () {
+      this.compareResult(this.space1.getArr().length,this.mainSize*this.mainSize*4);
     }
   });
 

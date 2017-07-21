@@ -71,6 +71,7 @@ window.metadyn = window.metadyn || {};
     return scenario.prepareScenario()
         .then(scenario.execute.bind(scenario))
         .then(function (results) {
+          scenario.checkResult();
           self._results.push(results);
           self._printResults(false);
           self._pointer++;
