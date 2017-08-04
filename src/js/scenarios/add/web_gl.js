@@ -14,6 +14,8 @@
     },
     g1: null,
     canvas: null,
+    postAdded: false,
+    INTER: 16384,
     initShader: function (id, type) {
       var self = this;
       return this.getShader(id, type).then(function (text) {
@@ -39,10 +41,10 @@
       //var height=this.$can_cont.height();
       /** @type {HTMLCanvasElement} */
       var canvas = this.canvas;
-      canvas.style.width = width+"px";
-      canvas.style.height = height+"px";
-      canvas.setAttribute("width",width);
-      canvas.setAttribute("height",height);
+      canvas.style.width = width + "px";
+      canvas.style.height = height + "px";
+      canvas.setAttribute("width", width);
+      canvas.setAttribute("height", height);
 
       if (this.g1) {
         this.g1.viewport(0, 0, width, height);
@@ -325,10 +327,11 @@
      */
     createSpace: function (width, height) {
       var i8arr = new Uint8Array(width * height * 4);
-      var i32arr=new Uint32Array(i8arr.buffer);
+      var i32arr = new Uint32Array(i8arr.buffer);
       return {
-        dims: [width, height], getArr: function (len) {
-          if(len===32) return i32arr;
+        dims: [width, height],
+        getArr: function (len) {
+          if (len === 32) return i32arr;
           return i8arr;
         }
       }
@@ -343,8 +346,8 @@
 
       this.space1 = this.createSpace(this.mainSize, this.mainSize);
       this.space2 = this.createSpace(this.blobSize, this.blobSize);
-      this.populateBlob(this.space2.getArr(32),16384);
-      Promise.all([
+      this.populateBlob(this.space2.getArr(32), this.blobSize, this.INTER);
+      return Promise.all([
         this.initShader("add2", "vertex"),
         this.initShader("add2", "fragment")
       ]).then(function () {
@@ -359,11 +362,18 @@
       this.add([this.getX(), this.getY(), this.getHeight()]);
     },
     getResult: function () {
-      this.postadd(this.space1);
-      return this.space1.getArr()
+      if (!this.postAdded) {
+        this.postadd(this.space1);
+      }
+      var intData = this.space1.getArr(32);
+      var INTER = this.INTER;
+      return Array.from(intData, function (value) {
+        return value / INTER;
+      })
     },
     checkResult: function () {
-      this.compareResult(this.space1.getArr().length,this.mainSize*this.mainSize*4);
+      this.compareResult(this.space1.getArr(32).length, this.mainSize * this.mainSize);
+      this.exportCanvas(this.getResult())
     }
   });
 

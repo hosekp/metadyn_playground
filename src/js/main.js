@@ -24,6 +24,7 @@ window.metadyn = window.metadyn || {};
   }
 
   Main.prototype.execute = function () {
+    this.comparators = new metadyn.Comparators();
     this._pointer = 0;
     this._next();
   };
@@ -44,7 +45,8 @@ window.metadyn = window.metadyn || {};
         average: result.average.toFixed(2),
         deviation: result.deviation.toFixed(2),
         whole: (result.average * result.repeats).toFixed(2),
-        repeats: result.repeats
+        repeats: result.repeats,
+        rmsd: result.rmsd.toPrecision(3)
       };
       if (!resultMap[result.scenario.category]) {
         resultMap[result.scenario.category] = [];
@@ -71,7 +73,8 @@ window.metadyn = window.metadyn || {};
     return scenario.prepareScenario()
         .then(scenario.execute.bind(scenario))
         .then(function (results) {
-          scenario.checkResult();
+          scenario.checkResult(results);
+          results.rmsd = self.comparators.compare(scenario, results.repeats);
           self._results.push(results);
           self._printResults(false);
           self._pointer++;

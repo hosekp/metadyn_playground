@@ -20,6 +20,7 @@ window.metadyn = window.metadyn || {};
       <th>Max</th>\
       <th>Whole</th>\
       <th>Repeats</th>\
+      <th>RMSD</th>\
     </tr>\
     {{#categories}}\
       <tr><td class="category_label">{{name}}</td></tr>\
@@ -32,6 +33,7 @@ window.metadyn = window.metadyn || {};
           <td>{{max}}</td>\
           <td>{{whole}} ms</td>\
           <td>{{repeats}}</td>\
+          <td>{{rmsd}}</td>\
         </tr>\
       {{/results}}\
     {{/categories}}\

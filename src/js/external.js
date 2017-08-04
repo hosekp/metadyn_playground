@@ -33,3 +33,10 @@ Promise.prototype.then = function (callback) {
 Promise.all = function (array) {
 
 };
+/**
+ * @param {Array} array
+ * @param {Function} mapFunction
+ */
+Array.from = function (array,mapFunction) {
+
+};

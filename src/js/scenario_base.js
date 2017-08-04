@@ -8,6 +8,7 @@
    * @property {number} min
    * @property {number} max
    * @property {int} repeats
+   * @property {number} [rmsd]
    */
   /**
    * @callback ScenarioFinished
@@ -29,6 +30,7 @@
    * @property {String} name
    * @property {number} repeats
    * @property {String} category
+   * @property {boolean} comparable
    * @constructor
    * @param {String} name
    * @param {String} category
@@ -36,6 +38,7 @@
   function Scenario(name, category) {
     this.name = name;
     this.category = category;
+    this.comparable = false;
   }
 
   Scenario.prototype.maxRepeats = 100000;
@@ -60,7 +63,7 @@
   };
   /**
    *
-   * @return {Promise}
+   * @return {Promise.<Result>}
    */
   Scenario.prototype.execute = function () {
     var startTimestamp, endTimestamp;
@@ -69,7 +72,8 @@
       var max = 0;
       var min = Infinity;
       var sum2 = 0;
-      for (var i = 0; i < this.maxRepeats; i++) {
+      var i = 0;
+      while (!this._shouldBreakRepeats(i, sum)) {
         startTimestamp = performance.now();
         this.syncScenario();
         endTimestamp = performance.now();
@@ -78,10 +82,7 @@
         if (max < diff) max = diff;
         if (min > diff) min = diff;
         sum2 += diff * diff;
-        if (sum > 1000 && i >= 9 || sum > 5000) {
-          i++;
-          break;
-        }
+        i++;
       }
       var repeats = i;
       return Promise.resolve({
@@ -107,17 +108,22 @@
       throw "missing scenario " + this.name;
     }
   };
+  Scenario.prototype._shouldBreakRepeats = function (i, time) {
+    var wholeSeedCycle = 9;
+    return i % wholeSeedCycle === 0 && (i >= this.maxRepeats || time > 1000 && i >= 10 || time > 5000);
+  };
   /** @type {EmptyCallback} */
   Scenario.prototype.prepare = emptyFunction;
   /** @type {AsyncFunction} */
   Scenario.prototype.asyncPrepare = emptyCallbackFunction;
   /**
    * @param {AsyncOptions} options
-   * @return {Promise}
+   * @return {Promise.<Result>}
    * @private
    */
   Scenario.prototype._nextRepeat = function (options) {
-    if (options.repeatId === this.maxRepeats || (options.sum > 1000 && options.repeatId >= 10) || options.sum > 5000) {
+    if (this._shouldBreakRepeats(options.repeatId, options.sum)) {
+      // if (options.repeatId === this.maxRepeats || (options.sum > 1000 && options.repeatId >= 10) || options.sum > 5000) {
       var repeats = options.repeatId;
       return Promise.resolve({
         scenario: this,
@@ -150,12 +156,19 @@
   Scenario.prototype.asyncScenario = emptyCallbackFunction;
 
   /**
+   * @param {Result} results
    * @return {boolean}
    */
-  Scenario.prototype.checkResult = function () {
+  Scenario.prototype.checkResult = function (results) {
     if (this.getResult === emptyFunction) return false;
     this.compareResult(this.getResult());
   };
+  /**
+   *
+   * @param result
+   * @param [correct]
+   * @return {boolean}
+   */
   Scenario.prototype.compareResult = function (result, correct) {
     correct = correct || this.correctResult;
     if (correct === null) return false;

@@ -15,10 +15,11 @@
 <script type="application/javascript" src="js/promise.js"></script>
 <script type="application/javascript" src="js/utils.js"></script>
 <script type="application/javascript" src="js/main.js"></script>
+<script type="application/javascript" src="js/comparator.js"></script>
 <script type="application/javascript" src="js/templates.js"></script>
 <script type="application/javascript" src="js/scenario_base.js"></script>
-<script type="application/javascript" src="js/scenarios/sync_test.js"></script>
-<script type="application/javascript" src="js/scenarios/async_test.js"></script>
+<script type="application/javascript" src="js/scenarios/basic/sync_test.js"></script>
+<script type="application/javascript" src="js/scenarios/basic/async_test.js"></script>
 <script type="application/javascript" src="js/scenarios/max/math_max.js"></script>
 <script type="application/javascript" src="js/scenarios/max/math_max_ta.js"></script>
 <script type="application/javascript" src="js/scenarios/max/ta_reduce_greater.js"></script>
@@ -26,20 +27,22 @@
 <script type="application/javascript" src="js/scenarios/add/add_gaussian_naive.js"></script>
 <script type="application/javascript" src="js/scenarios/add/add_gaussian_dimsigma.js"></script>
 <script type="application/javascript" src="js/scenarios/add/add_gaussian_optimized.js"></script>
-<script type="application/javascript" src="js/scenarios/add/add_gaussian_ta.js"></script>
+<script type="application/javascript" src="js/scenarios/add/add_gaussian_ta_naive.js"></script>
 <script type="application/javascript" src="js/scenarios/add/add_gaussian_ta_dimsigma.js"></script>
 <script type="application/javascript" src="js/scenarios/add/blob_1_v_1.js"></script>
+<script type="application/javascript" src="js/scenarios/add/blob_4_v_1.js"></script>
+<script type="application/javascript" src="js/scenarios/add/blob_10_v_1.js"></script>
 <script type="application/javascript" src="js/scenarios/add/web_gl.js"></script>
 <script type="application/javascript">
   /** @external metadyn */
   var main = new metadyn.Main();
   main.addScenarios(
-      false,
+//      false,
       metadyn.syncTest,
       metadyn.asyncTest
   );
   main.addScenarios(
-      false,
+//      false,
       metadyn.mathMaxArray,
       metadyn.mathMaxTA,
       metadyn.TAReduceGreater
@@ -49,10 +52,12 @@
       metadyn.addGaussianNaive,
       metadyn.addGaussianDimSigma,
       metadyn.addGaussianOptimized,
-      metadyn.addGaussianTa,
+      metadyn.addGaussianTaNaive,
       metadyn.addGaussianTaDimSigma,
-      metadyn.addBlob1v1
-//      metadyn.addWebGl
+      metadyn.addBlob1v1,
+      metadyn.addBlob4v1,
+      metadyn.addBlob10v1,
+      metadyn.addWebGl
   );
 //  document.getElementById("run_simulation").addEventListener("click",main.execute.bind(main));
   document.getElementById("run_test").addEventListener("click",main.executeTest.bind(main));

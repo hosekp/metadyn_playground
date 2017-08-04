@@ -11,12 +11,12 @@
     var data = this.data;
     var dim = this.mainSize;
     var sigma = this.sigma;
-    var x = this.getX();
-    var y = this.getY();
+    var x0 = this.getX();
+    var y0 = this.getY();
     var height = this.getHeight();
-    for (var i = 0; i < dim; i++) {
-      for (var j = 0; j < dim; j++) {
-        data[i * dim + j] += height * Math.exp(-(Math.pow(i / dim - x, 2) + Math.pow(j / dim - y, 2)) / Math.pow(sigma,2));
+    for (var y = 0; y < dim; y++) {
+      for (var x = 0; x < dim; x++) {
+        data[y * dim + x] += height * Math.exp(-(Math.pow(x / dim - x0, 2) + Math.pow(y / dim - y0, 2)) / Math.pow(sigma,2));
       }
     }
   };
