@@ -4,27 +4,12 @@
  * @constructor
  */
 metadyn.AddScenario = function (scenario) {
-  var index = 0;
   /** @mixin */
   var AddScenario = {
     mainSize: 512,
     blobSize: 512,
     sigma: 0.1,
     comparable: true,
-    getX: function () {
-      // return 1;
-      return [0.2, 0.2, 0.2, 0.5, 0.5, 0.5, 0.8, 0.8, 0.8][index++ % 9];
-      // return (index++ * 0.12564) % 1
-    },
-    getY: function () {
-      // return 0;
-      return [0.2, 0.5, 0.8][index++ % 3];
-      // return (index++ * 0.35648) % 1
-    },
-    getHeight: function () {
-      return 1;
-      // return (index++ * 0.85642) % 1
-    },
     /**
      *
      * @param {Array.<number>} data
@@ -45,12 +30,6 @@ metadyn.AddScenario = function (scenario) {
           data[dim * i + j] = height * Math.exp(-(Math.pow(i - x, 2) + Math.pow(j - x, 2)) / dimSigma2);
         }
       }
-      return data;
-    },
-    prepareDataArray: function (dim) {
-      var data = [];
-      data.length = dim * dim;
-      data.fill(0);
       return data;
     },
     /**
