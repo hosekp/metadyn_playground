@@ -46,7 +46,7 @@ window.metadyn = window.metadyn || {};
         deviation: result.deviation.toFixed(2),
         whole: (result.average * result.repeats).toFixed(2),
         repeats: result.repeats,
-        rmsd: result.rmsd.toPrecision(3)
+        rmsd: result.rmsd===null?"---":result.rmsd.toPrecision(3)
       };
       if (!resultMap[result.scenario.category]) {
         resultMap[result.scenario.category] = [];

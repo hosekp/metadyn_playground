@@ -14,10 +14,10 @@
    * @param {String} name
    * @param {Array.<number>} result
    * @param {int} repeats
-   * @return {number}
+   * @return {number|null}
    */
   Comparators.prototype._compare = function (name, result, repeats) {
-    if (!result) return 0;
+    if (!result) return null;
     if (this.comparatorMap[name]) {
       return this.comparatorMap[name].compare(result, repeats);
     } else {
@@ -28,9 +28,10 @@
   /**
    * @param {Scenario} scenario
    * @param {int} repeats
+   * @return {number|null}
    */
   Comparators.prototype.compare = function (scenario, repeats) {
-    if(!scenario.comparable) return 0;
+    if(!scenario.comparable) return null;
     return this._compare(scenario.category, scenario.getResult(), repeats);
   };
 

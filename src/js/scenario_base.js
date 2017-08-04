@@ -8,7 +8,7 @@
    * @property {number} min
    * @property {number} max
    * @property {int} repeats
-   * @property {number} [rmsd]
+   * @property {number|null} [rmsd]
    */
   /**
    * @callback ScenarioFinished
