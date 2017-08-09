@@ -33,16 +33,19 @@
 <script type="application/javascript" src="js/scenarios/add/blob_4_v_1.js"></script>
 <script type="application/javascript" src="js/scenarios/add/blob_10_v_1.js"></script>
 <script type="application/javascript" src="js/scenarios/add/web_gl.js"></script>
+<script type="application/javascript" src="js/scenarios/draw/draw_scenario.js"></script>
+<script type="application/javascript" src="js/scenarios/draw/raster_naive.js"></script>
+<script type="application/javascript" src="js/scenarios/draw/raster_int32.js"></script>
 <script type="application/javascript">
   /** @external metadyn */
   var main = new metadyn.Main();
   main.addScenarios(
-//      false,
+      false,
       metadyn.syncTest,
       metadyn.asyncTest
   );
   main.addScenarios(
-//      false,
+      false,
       metadyn.mathMaxArray,
       metadyn.mathMaxTA,
       metadyn.TAReduceGreater
@@ -58,6 +61,11 @@
       metadyn.addBlob4v1,
       metadyn.addBlob10v1,
       metadyn.addWebGl
+  );
+  main.addScenarios(
+      false,
+      metadyn.drawRasterNaive,
+      metadyn.drawRasterInt32
   );
 //  document.getElementById("run_simulation").addEventListener("click",main.execute.bind(main));
   document.getElementById("run_test").addEventListener("click",main.executeTest.bind(main));

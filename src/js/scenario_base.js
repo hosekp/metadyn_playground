@@ -9,6 +9,7 @@
    * @property {number} max
    * @property {int} repeats
    * @property {number|null} [rmsd]
+   * @property {Array.<number>} resultData
    */
   /**
    * @callback ScenarioFinished
@@ -21,9 +22,12 @@
    * @param {EmptyCallback} callback
    */
 
-  /** @typedef {{repeatId:number,start:number,prepared?:boolean,min:number,max:number,sum:number,sum2:number}} AsyncOptions */
+  /** @typedef {{repeatId:number,start:number,prepared?:boolean,min:number,max:number,sum:number,sum2:number,resultData?:Array.<number>}} AsyncOptions */
 
   /**
+   * @param {String} name
+   * @param {String} category
+   * @constructor
    * @property {string} name
    * @property {boolean} isAsync
    * @property {number} repeats
@@ -31,14 +35,12 @@
    * @property {number} repeats
    * @property {String} category
    * @property {boolean} comparable
-   * @constructor
-   * @param {String} name
-   * @param {String} category
    */
   function Scenario(name, category) {
     this.name = name;
     this.category = category;
     this.comparable = false;
+    this.wholeSeedCycle = 1;
   }
 
   Scenario.prototype.maxRepeats = 100000;
@@ -66,7 +68,7 @@
    * @return {Promise.<Result>}
    */
   Scenario.prototype.execute = function () {
-    var startTimestamp, endTimestamp;
+    var startTimestamp, endTimestamp,resultData;
     if (this.syncScenario !== emptyFunction) {
       var sum = 0;
       var max = 0;
@@ -83,6 +85,9 @@
         if (min > diff) min = diff;
         sum2 += diff * diff;
         i++;
+        if(i === this.wholeSeedCycle){
+          resultData = this.getResult();
+        }
       }
       var repeats = i;
       return Promise.resolve({
@@ -91,7 +96,8 @@
         min: min,
         average: sum / repeats,
         deviation: Math.sqrt(sum2 / repeats - sum * sum / repeats / repeats),
-        repeats: repeats
+        repeats: repeats,
+        resultData:resultData
       });
     } else if (this.asyncScenario !== emptyCallbackFunction) {
       var options = {
@@ -109,8 +115,7 @@
     }
   };
   Scenario.prototype._shouldBreakRepeats = function (i, time) {
-    var wholeSeedCycle = 9;
-    return i % wholeSeedCycle === 0 && (i >= this.maxRepeats || time > 1000 && i >= 10 || time > 5000);
+    return i >= this.maxRepeats || time > 1000 && i >= 10 || time > 5000;
   };
   /** @type {EmptyCallback} */
   Scenario.prototype.prepare = emptyFunction;
@@ -131,10 +136,14 @@
         min: options.min,
         average: options.sum / repeats,
         deviation: Math.sqrt(options.sum2 / repeats - options.sum * options.sum / repeats / repeats),
-        repeats: repeats
+        repeats: repeats,
+        resultData:options.resultData
       });
     }
     options.repeatId++;
+    if(options.repeatId === this.wholeSeedCycle){
+      options.resultData = this.getResult();
+    }
     var self = this;
     options.start = performance.now();
     return new Promise(function (p1, p2) {
@@ -160,8 +169,7 @@
    * @return {boolean}
    */
   Scenario.prototype.checkResult = function (results) {
-    if (this.getResult === emptyFunction) return false;
-    this.compareResult(this.getResult());
+    this.compareResult(results.resultData);
   };
   /**
    *
@@ -191,14 +199,14 @@
   };
 
   Scenario.prototype.getResult = function () {
-    return this.data;
+    return Array.from(this.data);
   };
 
   Scenario.prototype.correctResult = null;
 
   //####################################################################################################################
   var index = 0;
-  metadyn.utils.extend(Scenario.prototype,{
+  metadyn.utils.extend(Scenario.prototype, {
     getX: function () {
       // return 1;
       return [0.2, 0.2, 0.2, 0.5, 0.5, 0.5, 0.8, 0.8, 0.8][index++ % 9];

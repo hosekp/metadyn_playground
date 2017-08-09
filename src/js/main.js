@@ -37,6 +37,7 @@ window.metadyn = window.metadyn || {};
     var formattedResults = [];
     var resultMap = {};
     for (var i = 0; i < this._results.length; i++) {
+      /** @type {Result} */
       var result = this._results[i];
       var formattedResult = {
         name: result.scenario.name,
@@ -46,7 +47,7 @@ window.metadyn = window.metadyn || {};
         deviation: result.deviation.toFixed(2),
         whole: (result.average * result.repeats).toFixed(2),
         repeats: result.repeats,
-        rmsd: result.rmsd===null?"---":result.rmsd.toPrecision(3)
+        rmsd: result.rmsd === null ? "---" : result.rmsd.toPrecision(3)
       };
       if (!resultMap[result.scenario.category]) {
         resultMap[result.scenario.category] = [];
@@ -74,7 +75,7 @@ window.metadyn = window.metadyn || {};
         .then(scenario.execute.bind(scenario))
         .then(function (results) {
           scenario.checkResult(results);
-          results.rmsd = self.comparators.compare(scenario, results.repeats);
+          results.rmsd = self.comparators.compare(scenario, results.resultData);
           self._results.push(results);
           self._printResults(false);
           self._pointer++;

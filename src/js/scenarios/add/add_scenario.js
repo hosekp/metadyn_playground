@@ -10,6 +10,7 @@ metadyn.AddScenario = function (scenario) {
     blobSize: 512,
     sigma: 0.1,
     comparable: true,
+    wholeSeedCycle: 9,
     /**
      *
      * @param {Array.<number>} data
@@ -31,13 +32,6 @@ metadyn.AddScenario = function (scenario) {
         }
       }
       return data;
-    },
-    /**
-     * @param {Result} results
-     * @return {boolean}
-     */
-    checkResult: function (results) {
-      this.compareResult(this.getResult());
     },
     exportCanvas: function (data) {
       var dim = this.mainSize;

@@ -35,7 +35,7 @@ Promise.all = function (array) {
 };
 /**
  * @param {Array} array
- * @param {Function} mapFunction
+ * @param {Function} [mapFunction]
  */
 Array.from = function (array,mapFunction) {
 

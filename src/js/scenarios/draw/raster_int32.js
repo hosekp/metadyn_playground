@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  var scenario = new metadyn.Scenario("Raster naive", 'Draw');
+  var scenario = new metadyn.Scenario("Raster int32", 'Draw');
   metadyn.DrawScenario(scenario);
   scenario.prepare = function () {
     /**
@@ -16,28 +16,25 @@
     var ctx = this.canvas.getContext("2d");
     /** @type {ImageData} */
     var imageData = ctx.getImageData(0, 0, dim, dim);
-    var dataImageData = imageData.data;
     var width = imageData.width;
     var height = imageData.height;
+    var buffer = new ArrayBuffer(width * height * 4);
+    var work32 = new Uint32Array(buffer);
     for (var y = 0; y < height; y++) {
       for (var x = 0; x < width; x++) {
-        var color = this.colorScale(this.sourceData[y * width + x]);
-        for (var i = 0; i < 4; i++) {
-          dataImageData[4*y * width + x * 4 + i] = color[i];
-        }
+        work32[y * width + x] = this.colorScale(this.sourceData[y * width + x]);
       }
     }
+    imageData.data.set(new Uint8ClampedArray(buffer));
     ctx.putImageData(imageData, 0, 0);
   };
   scenario.colorScale = function (d) {
     var sigma = 1000.0, hei = 380.0;
-    return [
-      Math.min(Math.max(hei - Math.abs(d - 0.23) * sigma, 0.0), 255.0),
-      Math.min(Math.max(hei - Math.abs(d - 0.49) * sigma, 0.0), 255.0),
-      Math.min(Math.max(hei - Math.abs(d - 0.77) * sigma, 0.0), 255.0),
-      255
-    ]
+    return (255 << 24) |
+        (Math.min(Math.max(hei - Math.abs(d - 0.77) * sigma, 0.0), 255.0) << 16) |
+        (Math.min(Math.max(hei - Math.abs(d - 0.49) * sigma, 0.0), 255.0) << 8) |
+        Math.min(Math.max(hei - Math.abs(d - 0.23) * sigma, 0.0), 255.0);
   };
 
-  metadyn.drawRasterNaive = scenario;
+  metadyn.drawRasterInt32 = scenario;
 })();

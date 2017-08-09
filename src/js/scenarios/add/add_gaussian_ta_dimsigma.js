@@ -3,9 +3,7 @@
   metadyn.AddScenario(scenario);
   scenario.prepare = function () {
     var int32View = new Float32Array(this.mainSize * this.mainSize);
-    for (var i = 0; i < int32View.length; i++) {
-      int32View[i] = 0;
-    }
+    int32View.fill(0);
     this.data = int32View;
   };
   scenario.syncScenario = function syncTest() {
