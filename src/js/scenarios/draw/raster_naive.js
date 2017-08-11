@@ -8,7 +8,7 @@
      * @type {HTMLCanvasElement}
      */
     this.canvas = this.createCanvas();
-    this.sourceData = this.prepareData();
+    this.sourceData = this.prepareData(this.dim);
   };
   scenario.syncScenario = function () {
     var dim = this.dim;
@@ -32,9 +32,9 @@
   scenario.colorScale = function (d) {
     var sigma = 1000.0, hei = 380.0;
     return [
-      Math.min(Math.max(hei - Math.abs(d - 0.23) * sigma, 0.0), 255.0),
-      Math.min(Math.max(hei - Math.abs(d - 0.49) * sigma, 0.0), 255.0),
-      Math.min(Math.max(hei - Math.abs(d - 0.77) * sigma, 0.0), 255.0),
+      Math.min(Math.max(Math.floor(hei - Math.abs(d - 0.23) * sigma), 0), 255),
+      Math.min(Math.max(Math.floor(hei - Math.abs(d - 0.49) * sigma), 0), 255),
+      Math.min(Math.max(Math.floor(hei - Math.abs(d - 0.77) * sigma), 0), 255),
       255
     ]
   };

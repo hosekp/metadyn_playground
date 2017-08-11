@@ -17,6 +17,7 @@
 <script type="application/javascript" src="js/main.js"></script>
 <script type="application/javascript" src="js/comparator.js"></script>
 <script type="application/javascript" src="js/templates.js"></script>
+<script type="application/javascript" src="js/manual_tests.js"></script>
 <script type="application/javascript" src="js/scenario_base.js"></script>
 <script type="application/javascript" src="js/scenarios/basic/sync_test.js"></script>
 <script type="application/javascript" src="js/scenarios/basic/async_test.js"></script>
@@ -36,41 +37,47 @@
 <script type="application/javascript" src="js/scenarios/draw/draw_scenario.js"></script>
 <script type="application/javascript" src="js/scenarios/draw/raster_naive.js"></script>
 <script type="application/javascript" src="js/scenarios/draw/raster_int32.js"></script>
+<script type="application/javascript" src="js/scenarios/draw/raster_scale_discrete.js"></script>
+<script type="application/javascript" src="js/scenarios/draw/raster4_naive.js"></script>
 <script type="application/javascript">
-  /** @external metadyn */
-  var main = new metadyn.Main();
-  main.addScenarios(
-      false,
-      metadyn.syncTest,
-      metadyn.asyncTest
-  );
-  main.addScenarios(
-      false,
-      metadyn.mathMaxArray,
-      metadyn.mathMaxTA,
-      metadyn.TAReduceGreater
-  );
-  main.addScenarios(
-//      false,
-      metadyn.addGaussianNaive,
-      metadyn.addGaussianDimSigma,
-      metadyn.addGaussianOptimized,
-      metadyn.addGaussianTaNaive,
-      metadyn.addGaussianTaDimSigma,
-      metadyn.addBlob1v1,
-      metadyn.addBlob4v1,
-      metadyn.addBlob10v1,
-      metadyn.addWebGl
-  );
-  main.addScenarios(
-      false,
-      metadyn.drawRasterNaive,
-      metadyn.drawRasterInt32
-  );
-//  document.getElementById("run_simulation").addEventListener("click",main.execute.bind(main));
-  document.getElementById("run_test").addEventListener("click",main.executeTest.bind(main));
-  setTimeout(main.execute.bind(main), 1000);
-//  main.execute();
+  (function (metadyn) {
+    /** @external metadyn */
+    var main = new metadyn.Main();
+    main.addScenarios(
+        false,
+        metadyn.syncTest,
+        metadyn.asyncTest
+    );
+    main.addScenarios(
+        false,
+        metadyn.mathMaxArray,
+        metadyn.mathMaxTA,
+        metadyn.TAReduceGreater
+    );
+    main.addScenarios(
+        false,
+        metadyn.addGaussianNaive,
+        metadyn.addGaussianDimSigma,
+        metadyn.addGaussianOptimized,
+        metadyn.addGaussianTaNaive,
+        metadyn.addGaussianTaDimSigma,
+        metadyn.addBlob1v1,
+        metadyn.addBlob4v1,
+        metadyn.addBlob10v1,
+        metadyn.addWebGl
+    );
+    main.addScenarios(
+//        false,
+        metadyn.drawRasterNaive,
+//        metadyn.drawRasterInt32,
+//        metadyn.drawRasterScaleDiscrete
+        metadyn.drawRaster4Naive
+    );
+    //  document.getElementById("run_simulation").addEventListener("click",main.execute.bind(main));
+    document.getElementById("run_test").addEventListener("click", metadyn.tests.executeTest.bind(main));
+    setTimeout(main.execute.bind(main), 1000);
+    //  main.execute();
+  })(metadyn);
 </script>
 </body>
 </html>

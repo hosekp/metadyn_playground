@@ -103,37 +103,6 @@ window.metadyn = window.metadyn || {};
       this._scenarios.push(arguments[i]);
     }
   };
-
-  Main.prototype.executeTest = function () {
-    var start = window.performance.now();
-    var nowPrint = function () {
-      return (window.performance.now() - start).toFixed(0);
-    };
-    new Promise(function (p1, p2) {
-      setTimeout(p1, 1000);
-    })
-        .then(function () {
-          metadyn.utils.log("First " + nowPrint());
-        })
-        .then(this.delay)
-        .then(function () {
-          metadyn.utils.log("Second " + nowPrint());
-          return 5;
-        })
-        .then(function (val) {
-          return new Promise(function (p1, p2) {
-            setTimeout(function () {
-              p1(val);
-              metadyn.utils.log("Third " + nowPrint());
-            }, 1000);
-          })
-        })
-        .then(this.delay)
-        .then(function (val) {
-          metadyn.utils.log("Forth " + nowPrint());
-          metadyn.utils.log("value = " + val)
-        })
-  };
   metadyn.Main = Main;
 })();
 

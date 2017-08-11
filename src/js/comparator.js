@@ -31,6 +31,7 @@
    */
   Comparators.prototype.compare = function (scenario, resultData) {
     if(!scenario.comparable) return null;
+    // console.log(resultData);
     return this._compare(scenario.category, resultData);
   };
 

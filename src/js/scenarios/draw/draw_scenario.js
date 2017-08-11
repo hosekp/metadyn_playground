@@ -5,12 +5,17 @@
  */
 metadyn.DrawScenario = function (scenario) {
   var mixin = {
-    dim: 512,
+    dim: 8,
+    dataDim:5,
     sigma: 0.1,
     height: 1,
     comparable: true,
-    prepareData: function () {
-      var dim = this.dim;
+    /**
+     *
+     * @param {int} dim
+     * @return {Array}
+     */
+    prepareData: function (dim) {
       var data = [];
       data.length = dim * dim;
       data.fill(0);
@@ -56,6 +61,19 @@ metadyn.DrawScenario = function (scenario) {
     },
     getResult:function () {
       return this.canvas.getContext("2d").getImageData(0,0,this.dim,this.dim).data;
+    },
+    parse32:function (array32) {
+      var array8=[];
+      for(var i=0;i<array32.length;i++){
+        var fourByte=[0,0,0,0];
+        var int32 = array32[i];
+        for(var j=0;j<4;j++){
+          fourByte[4-j] = int32 % 255;
+          int32 = Math.floor(int32 /255);
+        }
+        array8.push(fourByte);
+      }
+      return array8;
     }
   };
   metadyn.utils.extend(scenario, mixin);
