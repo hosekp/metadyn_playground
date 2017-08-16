@@ -42,6 +42,7 @@
 <script type="application/javascript" src="js/scenarios/draw/raster4_decompose.js"></script>
 <script type="application/javascript" src="js/scenarios/draw/raster4_optimized.js"></script>
 <script type="application/javascript" src="js/scenarios/draw/raster4_rimmed.js"></script>
+<script type="application/javascript" src="js/scenarios/draw/web_gl.js"></script>
 <script type="application/javascript">
   (function (metadyn) {
     /** @external metadyn */
@@ -76,8 +77,9 @@
 //        metadyn.drawRasterScaleDiscrete
 //        metadyn.drawRaster4Naive,
 //        metadyn.drawRaster4Optimized,
-        metadyn.drawRaster4Decompose,
-        metadyn.drawRaster4Rimmed
+//        metadyn.drawRaster4Decompose,
+//        metadyn.drawRaster4Rimmed,
+        metadyn.drawWebGL
     );
     //  document.getElementById("run_simulation").addEventListener("click",main.execute.bind(main));
     document.getElementById("run_test").addEventListener("click", metadyn.tests.executeTest.bind(main));

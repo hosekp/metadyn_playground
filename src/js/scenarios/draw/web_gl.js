@@ -1,15 +1,7 @@
 (function () {
   "use strict";
-  var scenario = new metadyn.Scenario("Raster naive", 'Draw');
+  var scenario = new metadyn.Scenario("WebGL", 'Draw');
   metadyn.DrawScenario(scenario);
-  scenario.prepare = function () {
-    /**
-     *
-     * @type {HTMLCanvasElement}
-     */
-    this.canvas = this.createCanvas();
-    this.sourceData = this.prepareData(this.dim);
-  };
   metadyn.utils.extend(scenario, {
     g1: null,
     vertex: null,
@@ -18,13 +10,34 @@
     $can: null,
     needUpdCoord: false,
     program: null,
-    init: function () {
-      if (!this.initGL()) {
-        return false;
+    asyncPrepare: function (callback,reject) {
+      /**
+       *
+       * @type {HTMLCanvasElement}
+       */
+      this.canvas = this.createCanvas();
+      var data = this.prepareData(this.dim);
+      var i8array = new Uint8Array(this.dim*this.dim*4);
+      var i32array = new Uint8Array(i8array.buffer);
+      i32array.set(data);
+      this.sourceData = i8array;
+
+      if (!this.initGL(this.canvas)) {
+        return reject();
       }
-      this.getShader("2d-vertex", "vertex");
-      this.getShader("2d-fragment", "fragment");
-      return false;
+      var self = this;
+      return Promise.all([
+        this.initShader("2d", "vertex"),
+        this.initShader("2d", "fragment")
+      ]).then(function () {
+        self.initProgram();
+      }).then(function () {
+        return callback();
+        // if (!self.leftTexture) return reject();
+        // self.preadd(self.space1, self.space2, [false, false]);
+        // return callback();
+      });
+
       //if(!this.initShaders()){return false;}
       //this.initBuffers();
       //this.initParam();
@@ -37,15 +50,16 @@
         this.g1.viewport(0, 0, width, height);
       }
     },
-    initGL: function () {
-      var can, params, gl;
-      can = $("<canvas>").attr({id: "main_can_gl"}).addClass("main_can");
-      this.$can = can;
+    /**
+     * @param {HTMLCanvasElement} can
+     */
+    initGL: function (can) {
+      var params, gl;
       //draw.drawer.appendCanvas();
       try {
         params = {premultipliedAlpha: false, preserveDrawingBuffer: true};
-        gl = can[0].getContext("webgl", params)
-            || can[0].getContext("experimental-webgl", params);
+        gl = can.getContext("webgl", params)
+            || can.getContext("experimental-webgl", params);
         //var gl = can[0].getContext("webgl");
         //gl = getWebGLContext(main.div.canvas[0]);
       } catch (e) {
@@ -53,7 +67,7 @@
         return false;
       }
       if (!gl) {
-        metadyn.utils.warning("WebGL:", "Could not initialize", "WebGL context");
+        metadyn.utils.warning("WebGL: Could not initialize WebGL context");
         this.loadFailed();
         return false;
       }
@@ -61,6 +75,51 @@
       this.g1 = gl;
       //this.resize();
       return true;
+    },
+    initShader: function (id, type) {
+      var self = this;
+      return this.getShader(id, type).then(function (text) {
+        self.processShader(text, type);
+      });
+    },
+    getShader: function (id, type) {
+      var xobj = new XMLHttpRequest();
+      xobj.overrideMimeType("text");
+      xobj.open('GET', './js/scenarios/draw/' + id + '-' + type + '.shd', true); // Replace 'my_data' with the path to your file
+      var promise = new Promise(function (resolve, reject) {
+        xobj.onreadystatechange = function () {
+          if (xobj.readyState === 4 && xobj.status === 200) {
+            // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+            resolve(xobj.responseText);
+          }
+        };
+      });
+      xobj.send(null);
+      return promise;
+    },
+    processShader: function (str, typ) {
+      var gl = this.g1, shader;
+      if (typ === "vertex") {
+        shader = gl.createShader(gl.VERTEX_SHADER);
+      } else if (typ === "fragment") {
+        shader = gl.createShader(gl.FRAGMENT_SHADER);
+      } else {
+        return null;
+      }
+      gl.shaderSource(shader, str);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        this.loadFailed(gl.getShaderInfoLog(shader));
+        return null;
+      }
+      //manage.console.debug(typ+"Shader parsed and compiled");
+      if (typ === "vertex") {
+        this.vertex = shader;
+      } else if (typ === "fragment") {
+        this.fragment = shader;
+      } else {
+        return null;
+      }
     },
     initProgram: function () {
       var gl = this.g1,
@@ -70,13 +129,14 @@
       gl.attachShader(progr, this.fragment);
       gl.linkProgram(progr);
       if (!gl.getProgramParameter(progr, gl.LINK_STATUS)) {
-        metadyn.utils.warning("WebGL:", "Could to initialize", "shader program");
+        metadyn.utils.warning("WebGL: Could to initialize shader program");
         this.loadFailed();
         return false;
       }
       this.initParam();
       gl.useProgram(progr);
       this.initBuffers();
+      this.initTextures();
       return true;
     },
     initParam: function () {
@@ -107,7 +167,6 @@
       //gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0,1,0,0,1,0,1,1,0,1,1]), gl.STATIC_DRAW);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0]), gl.STATIC_DRAW);
       //gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1.0,-1.0,1.0,-1.0,-1.0,1.0,-1.0,1.0,1.0,-1.0,1.0,1.0]),gl.STATIC_DRAW);
-      this.initTextures();
     },
     initTextures: function () {
       var gl = this.g1,
@@ -120,12 +179,12 @@
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      metadyn.utils.log("WebGL:", "loaded");
-      this.inited = true;
+      // metadyn.utils.log("WebGL: loaded");
     },
     draw: function (array, zmax) {
       var gl = this.g1, nat, resol;
-      nat = view.axi.natureRange(0, zmax, 10, false);
+      nat = [0,0.2,0.4,0.6,0.8,1];
+      // nat = view.axi.natureRange(0, zmax, 10, false);
       //manage.console.debug("step="+nat[2]);
       //manage.console.debug("drawing");
       gl.bindBuffer(gl.ARRAY_BUFFER, this.coordBuffer);
@@ -136,17 +195,17 @@
       gl.vertexAttribPointer(this.program.texCoordLocation, 2, gl.FLOAT, false, 0, 0);
       gl.uniform1f(this.program.zmaxLoc, zmax * 64);
       gl.uniform1f(this.program.stepLoc, nat[2] * 64);
-      gl.uniform1f(this.program.cmarginLoc, 0.003 / control.settings.zoompow());
+      gl.uniform1f(this.program.cmarginLoc, 0.003 /*/ control.settings.zoompow()*/);
       /*var arrBuffer=gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER,arrBuffer);
       gl.bufferData(gl.ARRAY_BUFFER,graf.arrbuf,gl.STATIC_DRAW);
       gl.vertexAttribPointer(this.program.arrBuffLocation,1,gl.FLOAT,false,0,0);*/
       //graf.compArr();
       //main.cons(graf.bytearr.length);
-      resol = control.settings.resol.get();
+      resol = this.dim;
 
       if (resol * resol * 4 !== array.length) {
-        metadyn.utils.error("WebGL:", "Wrong length of texture array");
+        throw "WebGL: Wrong length of texture array";
       }
 
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, resol, resol, 0, gl.RGBA, gl.UNSIGNED_BYTE, array);
@@ -157,7 +216,7 @@
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       //var err=gl.getError();if(err!==gl.NO_ERROR){manage.console.error("WebGL draw error: ",err);}
     },
-    updateCoord: function () {
+    updateCoordOld: function () {
       var zoompow, posx, posy, xlow, xhigh, ylow, yhigh, mustr, i, arr,
           sett = control.settings;
       posx = sett.frameposx.get();
@@ -174,46 +233,17 @@
         arr[i] = mustr[i];
       }
       //[0,0, 1,0, 0,1, 0,1, 1,0, 1,1]
+    },
+    updateCoord:function () {
 
-    },
-    getShader: function (id, typ) {
-      $.get("shaders/" + id + ".shd", $.proxy(function (str) {
-        this.initShader(str, typ);
-      }, this), "text");
-    },
-    initShader: function (str, typ) {
-      var gl = this.g1, shader;
-      if (typ === "vertex") {
-        shader = gl.createShader(gl.VERTEX_SHADER);
-      } else if (typ === "fragment") {
-        shader = gl.createShader(gl.FRAGMENT_SHADER);
-      } else {
-        return null;
-      }
-      gl.shaderSource(shader, str);
-      gl.compileShader(shader);
-      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        this.loadFailed(gl.getShaderInfoLog(shader));
-        return null;
-      }
-      //manage.console.debug(typ+"Shader parsed and compiled");
-      if (typ === "vertex") {
-        this.vertex = shader;
-      } else if (typ === "fragment") {
-        this.fragment = shader;
-      } else {
-        return null;
-      }
-      if (this.vertex && this.fragment) {
-        this.initProgram();
-      }
     },
     loadFailed: function () {
       metadyn.utils.warning("WebGL cannot be loaded");
+    },
+    syncScenario:function () {
+      this.draw(this.sourceData,1);
     }
   });
-  scenario.syncScenario = function () {
-  };
-  metadyn.drawRasterNaive = scenario;
+  metadyn.drawWebGL = scenario;
 })();
 

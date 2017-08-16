@@ -10,6 +10,7 @@ metadyn.DrawScenario = function (scenario) {
     sigma: 0.1,
     height: 1,
     comparable: true,
+    maxRepeats: 1,
     /**
      *
      * @param {int} dim
