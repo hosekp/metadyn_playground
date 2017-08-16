@@ -39,6 +39,9 @@
 <script type="application/javascript" src="js/scenarios/draw/raster_int32.js"></script>
 <script type="application/javascript" src="js/scenarios/draw/raster_scale_discrete.js"></script>
 <script type="application/javascript" src="js/scenarios/draw/raster4_naive.js"></script>
+<script type="application/javascript" src="js/scenarios/draw/raster4_decompose.js"></script>
+<script type="application/javascript" src="js/scenarios/draw/raster4_optimized.js"></script>
+<script type="application/javascript" src="js/scenarios/draw/raster4_rimmed.js"></script>
 <script type="application/javascript">
   (function (metadyn) {
     /** @external metadyn */
@@ -71,7 +74,10 @@
         metadyn.drawRasterNaive,
 //        metadyn.drawRasterInt32,
 //        metadyn.drawRasterScaleDiscrete
-        metadyn.drawRaster4Naive
+//        metadyn.drawRaster4Naive,
+//        metadyn.drawRaster4Optimized,
+        metadyn.drawRaster4Decompose,
+        metadyn.drawRaster4Rimmed
     );
     //  document.getElementById("run_simulation").addEventListener("click",main.execute.bind(main));
     document.getElementById("run_test").addEventListener("click", metadyn.tests.executeTest.bind(main));
