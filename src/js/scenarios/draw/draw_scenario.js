@@ -10,13 +10,13 @@ metadyn.DrawScenario = function (scenario) {
     sigma: 0.1,
     height: 1,
     comparable: true,
-    maxRepeats: 1,
     /**
      *
      * @param {int} dim
      * @return {Array}
      */
     prepareData: function (dim) {
+      // return this.prepareRasterData(dim);
       var data = [];
       data.length = dim * dim;
       data.fill(0);
@@ -48,25 +48,8 @@ metadyn.DrawScenario = function (scenario) {
       }
       return data;
     },
-    /**
-     * @return {HTMLCanvasElement}
-     */
-    createCanvas: function () {
-      // noinspection JSValidateTypes
-      /** @type {HTMLCanvasElement} */
-      var canvas = document.createElement("canvas");
-      canvas.height = this.dim;
-      canvas.width = this.dim;
-      return canvas;
-    },
     exportCanvas: function (canvas) {
-      var canvasCopy = this.createCanvas();
-      // var size = this.dim > 50 ? this.dim : 50;
-      var size = 50;
-      canvasCopy.style.width = size + "px";
-      canvasCopy.style.height = size + "px";
-      canvasCopy.style.imageRendering = "pixelated";
-      canvasCopy.style.border = "1px solid black";
+      var canvasCopy = this.prepareExportCanvas(this.dim);
       var ctx = canvasCopy.getContext("2d");
       ctx.drawImage(canvas, 0, 0);
       document.getElementById("image_cont").appendChild(canvasCopy);

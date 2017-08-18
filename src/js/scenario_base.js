@@ -41,6 +41,7 @@
     this.category = category;
     this.comparable = false;
     this.wholeSeedCycle = 1;
+    this.exportCanvasSize = 50;
   }
 
   Scenario.prototype.maxRepeats = 100000;
@@ -68,7 +69,7 @@
    * @return {Promise.<Result>}
    */
   Scenario.prototype.execute = function () {
-    var startTimestamp, endTimestamp,resultData;
+    var startTimestamp, endTimestamp, resultData;
     if (this.syncScenario !== emptyFunction) {
       var sum = 0;
       var max = 0;
@@ -85,7 +86,7 @@
         if (min > diff) min = diff;
         sum2 += diff * diff;
         i++;
-        if(i === this.wholeSeedCycle){
+        if (i === this.wholeSeedCycle) {
           resultData = this.getResult();
         }
       }
@@ -97,7 +98,7 @@
         average: sum / repeats,
         deviation: Math.sqrt(sum2 / repeats - sum * sum / repeats / repeats),
         repeats: repeats,
-        resultData:resultData
+        resultData: resultData
       });
     } else if (this.asyncScenario !== emptyCallbackFunction) {
       var options = {
@@ -137,11 +138,11 @@
         average: options.sum / repeats,
         deviation: Math.sqrt(options.sum2 / repeats - options.sum * options.sum / repeats / repeats),
         repeats: repeats,
-        resultData:options.resultData
+        resultData: options.resultData
       });
     }
     options.repeatId++;
-    if(options.repeatId === this.wholeSeedCycle){
+    if (options.repeatId === this.wholeSeedCycle) {
       options.resultData = this.getResult();
     }
     var self = this;
@@ -226,6 +227,33 @@
       data.length = dim * dim;
       data.fill(0);
       return data;
+    },
+    /**
+     * @return {HTMLCanvasElement}
+     */
+    createCanvas: function () {
+      // noinspection JSValidateTypes
+      /** @type {HTMLCanvasElement} */
+      var canvas = document.createElement("canvas");
+      canvas.height = this.dim;
+      canvas.width = this.dim;
+      return canvas;
+    },
+    /**
+     * @return {HTMLCanvasElement}
+     */
+    prepareExportCanvas: function (dataSize) {
+      var size =this.exportCanvasSize;
+      dataSize = dataSize || size;
+      var canvas = this.createCanvas();
+      canvas.setAttribute("width", dataSize.toString());
+      canvas.setAttribute("height", dataSize.toString());
+      canvas.style.width = size + "px";
+      canvas.style.height = size + "px";
+      canvas.style.imageRendering = "pixelated";
+      canvas.style.border = "1px solid black";
+      canvas.setAttribute("title", this.name);
+      return canvas;
     }
   });
   metadyn.Scenario = Scenario;

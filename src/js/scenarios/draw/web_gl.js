@@ -10,15 +10,19 @@
     $can: null,
     needUpdCoord: false,
     program: null,
-    asyncPrepare: function (callback,reject) {
+    INTER: 16384,
+    asyncPrepare: function (callback, reject) {
       /**
        *
        * @type {HTMLCanvasElement}
        */
       this.canvas = this.createCanvas();
-      var data = this.prepareData(this.dim);
-      var i8array = new Uint8Array(this.dim*this.dim*4);
-      var i32array = new Uint8Array(i8array.buffer);
+      var data = this.prepareData(this.dataDim);
+      var i8array = new Uint8Array(this.dataDim * this.dataDim * 4);
+      var i32array = new Uint32Array(i8array.buffer);
+      data = Array.from(data, function (value) {
+        return Math.floor(value * 16384)
+      });
       i32array.set(data);
       this.sourceData = i8array;
 
@@ -60,8 +64,6 @@
         params = {premultipliedAlpha: false, preserveDrawingBuffer: true};
         gl = can.getContext("webgl", params)
             || can.getContext("experimental-webgl", params);
-        //var gl = can[0].getContext("webgl");
-        //gl = getWebGLContext(main.div.canvas[0]);
       } catch (e) {
         this.loadFailed(e);
         return false;
@@ -164,8 +166,8 @@
       gl.bufferData(gl.ARRAY_BUFFER, this.coordarr, gl.STATIC_DRAW);
       this.texCoordBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer);
-      //gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0,1,0,0,1,0,1,1,0,1,1]), gl.STATIC_DRAW);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0]), gl.STATIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1]), gl.STATIC_DRAW);
+      // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0]), gl.STATIC_DRAW);
       //gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1.0,-1.0,1.0,-1.0,-1.0,1.0,-1.0,1.0,1.0,-1.0,1.0,1.0]),gl.STATIC_DRAW);
     },
     initTextures: function () {
@@ -183,7 +185,8 @@
     },
     draw: function (array, zmax) {
       var gl = this.g1, nat, resol;
-      nat = [0,0.2,0.4,0.6,0.8,1];
+      // nat = [null,null,0.2];
+      nat = [null, null, 50];
       // nat = view.axi.natureRange(0, zmax, 10, false);
       //manage.console.debug("step="+nat[2]);
       //manage.console.debug("drawing");
@@ -202,7 +205,7 @@
       gl.vertexAttribPointer(this.program.arrBuffLocation,1,gl.FLOAT,false,0,0);*/
       //graf.compArr();
       //main.cons(graf.bytearr.length);
-      resol = this.dim;
+      resol = this.dataDim;
 
       if (resol * resol * 4 !== array.length) {
         throw "WebGL: Wrong length of texture array";
@@ -234,14 +237,20 @@
       }
       //[0,0, 1,0, 0,1, 0,1, 1,0, 1,1]
     },
-    updateCoord:function () {
+    updateCoord: function () {
 
     },
     loadFailed: function () {
       metadyn.utils.warning("WebGL cannot be loaded");
     },
-    syncScenario:function () {
-      this.draw(this.sourceData,1);
+    syncScenario: function () {
+      this.draw(this.sourceData, 1);
+    },
+    getResult: function () {
+      var copyCanvas = this.createCanvas();
+      var copyCtx = copyCanvas.getContext("2d");
+      copyCtx.drawImage(this.canvas, 0, 0);
+      return copyCtx.getImageData(0, 0, this.dim, this.dim).data;
     }
   });
   metadyn.drawWebGL = scenario;

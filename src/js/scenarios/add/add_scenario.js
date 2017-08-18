@@ -35,12 +35,7 @@ metadyn.AddScenario = function (scenario) {
     },
     exportCanvas: function (data) {
       var dim = this.mainSize;
-      var canvas = document.createElement("canvas");
-      canvas.setAttribute("title", this.name);
-      canvas.setAttribute("width", dim.toString());
-      canvas.setAttribute("height", dim.toString());
-      canvas.style.width = "50px";
-      canvas.style.height = "50px";
+      var canvas = this.prepareExportCanvas(dim);
       var ctx = canvas.getContext("2d");
       var imageData = ctx.getImageData(0, 0, dim, dim);
       var imageArray = imageData.data;
