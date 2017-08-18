@@ -38,16 +38,21 @@ metadyn.AddScenario = function (scenario) {
       var canvas = this.prepareExportCanvas(dim);
       var ctx = canvas.getContext("2d");
       var imageData = ctx.getImageData(0, 0, dim, dim);
-      var imageArray = imageData.data;
       var max = metadyn.utils.findMaxMin(data)[0];
+      var int32array = new Uint32Array(data.length);
       for (var i = 0; i < data.length; i++) {
-        imageArray[i * 4] = 255;
-        imageArray[i * 4 + 1] = Math.floor(255 - data[i] / max * 255);
-        imageArray[i * 4 + 2] = Math.floor(255 - data[i] / max * 255);
-        imageArray[i * 4 + 3] = 255;
+        int32array[i] = this.colorScale(data[i]/max);
       }
+      imageData.data.set(new Uint8Array(int32array.buffer));
       ctx.putImageData(imageData, 0, 0);
       document.getElementById("image_cont").appendChild(canvas);
+    },
+    colorScale: function (d) {
+      var sigma = 1000.0, hei = 380.0;
+      return (255 << 24) |
+          (Math.min(Math.max(hei - Math.abs(d - 0.77) * sigma, 0.0), 255.0) << 16) |
+          (Math.min(Math.max(hei - Math.abs(d - 0.49) * sigma, 0.0), 255.0) << 8) |
+          Math.min(Math.max(hei - Math.abs(d - 0.23) * sigma, 0.0), 255.0);
     }
   };
   metadyn.utils.extend(scenario, AddScenario);

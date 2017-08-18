@@ -206,16 +206,16 @@
   Scenario.prototype.correctResult = null;
 
   //####################################################################################################################
-  var index = 0;
   metadyn.utils.extend(Scenario.prototype, {
+  blobIndex: 0,
     getX: function () {
       // return 1;
-      return [0.2, 0.2, 0.2, 0.5, 0.5, 0.5, 0.8, 0.8, 0.8][index++ % 9];
+      return [0.2, 0.2, 0.2, 0.5, 0.5, 0.5, 0.8, 0.8, 0.8][this.blobIndex++ % 9];
       // return (index++ * 0.12564) % 1
     },
     getY: function () {
       // return 0;
-      return [0.2, 0.5, 0.8][index++ % 3];
+      return [0.2, 0.5, 0.8][this.blobIndex++ % 3];
       // return (index++ * 0.35648) % 1
     },
     getHeight: function () {
