@@ -6,7 +6,7 @@
 metadyn.DrawScenario = function (scenario) {
   var mixin = {
     dim: 512,
-    dataDim:100,
+    dataDim:128,
     sigma: 0.1,
     height: 1,
     comparable: true,

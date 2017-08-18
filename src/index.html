@@ -36,6 +36,7 @@
 <script type="application/javascript" src="js/scenarios/add/web_gl.js"></script>
 <script type="application/javascript" src="js/scenarios/add/add_random_position.js"></script>
 <script type="application/javascript" src="js/scenarios/draw/draw_scenario.js"></script>
+<script type="application/javascript" src="js/scenarios/draw/web_gl_scenario.js"></script>
 <script type="application/javascript" src="js/scenarios/draw/raster_naive.js"></script>
 <script type="application/javascript" src="js/scenarios/draw/raster_int32.js"></script>
 <script type="application/javascript" src="js/scenarios/draw/raster_scale_discrete.js"></script>
@@ -44,6 +45,7 @@
 <script type="application/javascript" src="js/scenarios/draw/raster4_optimized.js"></script>
 <script type="application/javascript" src="js/scenarios/draw/raster4_rimmed.js"></script>
 <script type="application/javascript" src="js/scenarios/draw/web_gl.js"></script>
+<script type="application/javascript" src="js/scenarios/draw/web_gl_contour.js"></script>
 <script type="application/javascript" src="js/scenarios/draw/random_value.js"></script>
 <script type="application/javascript">
   (function (metadyn) {
@@ -61,7 +63,7 @@
         metadyn.TAReduceGreater
     );
     main.addScenarios(
-//        false,
+        false,
         metadyn.addGaussianNaive,
         metadyn.addGaussianDimSigma,
         metadyn.addGaussianOptimized,
@@ -83,6 +85,7 @@
 //        metadyn.drawRaster4Decompose,
 //        metadyn.drawRaster4Rimmed,
         metadyn.drawWebGL,
+        metadyn.drawWebGLContour,
         metadyn.drawRandomValue
     );
     //  document.getElementById("run_simulation").addEventListener("click",main.execute.bind(main));

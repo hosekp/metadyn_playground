@@ -102,7 +102,7 @@ void main() {
     //d=unpack(pack(d));
     vec4 outVec;
     gl_FragColor=colorScale(d/u_zmax);
-    //contour(d);
+    contour(d);
     //gl_FragColor = texture2D(u_image,v_texCoord);
     //outVec = vec4(1.0,0.0,0.0,1.0);
     //gl_FragColor = outVec;
