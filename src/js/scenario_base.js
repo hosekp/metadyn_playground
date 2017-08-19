@@ -12,6 +12,11 @@
    * @property {Array.<number>} resultData
    */
   /**
+   * @typedef {Object} FailedResult
+   * @property {Scenario} scenario
+   * @property {string} reason
+   */
+  /**
    * @callback ScenarioFinished
    * @param {Result}
    * @return {undefined}
@@ -35,6 +40,7 @@
    * @property {number} repeats
    * @property {String} category
    * @property {boolean} comparable
+   * @property {string} skipReason
    */
   function Scenario(name, category) {
     this.name = name;
@@ -66,9 +72,12 @@
   };
   /**
    *
-   * @return {Promise.<Result>}
+   * @return {Promise.<Result|FailedResult>}
    */
   Scenario.prototype.execute = function () {
+    if (this.skipReason){
+      return Promise.resolve({scenario:this,reason:this.skipReason});
+    }
     var startTimestamp, endTimestamp, resultData;
     if (this.syncScenario !== emptyFunction) {
       var sum = 0;

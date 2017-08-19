@@ -340,6 +340,10 @@
     asyncPrepare: function (callback, reject) {
       var gl, can = document.createElement("canvas");
       gl = can.getContext("webgl", {premultipliedAlpha: false}) || can.getContext("experimental-webgl", {premultipliedAlpha: false});
+      if (!gl) {
+        this.skipReason = "cannot create webgl context";
+        return callback();
+      }
       this.g1 = gl;
       this.canvas = can;
       var self = this;

@@ -17,7 +17,7 @@ window.metadyn = window.metadyn || {};
      */
     this._pointer = 0;
     /**
-     * @type {Array.<Result>}
+     * @type {Array.<Result|FailedResult>}
      * @private
      */
     this._results = [];
@@ -37,18 +37,25 @@ window.metadyn = window.metadyn || {};
     var formattedResults = [];
     var resultMap = {};
     for (var i = 0; i < this._results.length; i++) {
-      /** @type {Result} */
+      /** @type {Result|FailedResult} */
       var result = this._results[i];
-      var formattedResult = {
-        name: result.scenario.name,
-        min: result.min.toFixed(2),
-        max: result.max.toFixed(2),
-        average: result.average.toFixed(2),
-        deviation: result.deviation.toFixed(2),
-        whole: (result.average * result.repeats).toFixed(2),
-        repeats: result.repeats,
-        rmsd: result.rmsd === null ? "---" : result.rmsd.toPrecision(3)
-      };
+      if (result.reason) {
+        var formattedResult = {
+          name: result.scenario.name,
+          reason: result.reason
+        };
+      } else {
+        formattedResult = {
+          name: result.scenario.name,
+          min: result.min.toFixed(2),
+          max: result.max.toFixed(2),
+          average: result.average.toFixed(2),
+          deviation: result.deviation.toFixed(2),
+          whole: (result.average * result.repeats).toFixed(2),
+          repeats: result.repeats,
+          rmsd: result.rmsd === null ? "---" : result.rmsd.toPrecision(3)
+        };
+      }
       if (!resultMap[result.scenario.category]) {
         resultMap[result.scenario.category] = [];
         formattedResults.push({
@@ -73,10 +80,12 @@ window.metadyn = window.metadyn || {};
     var self = this;
     return scenario.prepareScenario()
         .then(scenario.execute.bind(scenario))
-        .then(function (results) {
-          scenario.checkResult(results);
-          results.rmsd = self.comparators.compare(scenario, results.resultData);
-          self._results.push(results);
+        .then(function (result) {
+          if (!result.reason) {
+            scenario.checkResult(result);
+            result.rmsd = self.comparators.compare(scenario, result.resultData);
+          }
+          self._results.push(result);
           self._printResults(false);
           self._pointer++;
         })
