@@ -10,6 +10,7 @@
 <button id="run_test">Test</button>
 <div id="results_cont"></div>
 <div id="image_cont"></div>
+<div id="csv_cont"></div>
 <div id="console_cont"></div>
 <script type="application/javascript" src="js/mustache.min.js"></script>
 <script type="application/javascript" src="js/promise.js"></script>
@@ -19,6 +20,7 @@
 <script type="application/javascript" src="js/templates.js"></script>
 <script type="application/javascript" src="js/manual_tests.js"></script>
 <script type="application/javascript" src="js/scenario_base.js"></script>
+<script type="application/javascript" src="js/dom_code.js"></script>
 <script type="application/javascript" src="js/scenarios/basic/sync_test.js"></script>
 <script type="application/javascript" src="js/scenarios/basic/async_test.js"></script>
 <script type="application/javascript" src="js/scenarios/max/math_max.js"></script>
@@ -90,10 +92,7 @@
         metadyn.drawWebGLContour,
         metadyn.drawRandomValue
     );
-    //  document.getElementById("run_simulation").addEventListener("click",main.execute.bind(main));
-    document.getElementById("run_test").addEventListener("click", metadyn.tests.executeTest.bind(main));
-    setTimeout(main.execute.bind(main), 1000);
-    //  main.execute();
+    metadyn.main = main;
   })(metadyn);
 </script>
 </body>

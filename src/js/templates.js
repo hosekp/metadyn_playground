@@ -23,11 +23,11 @@ window.metadyn = window.metadyn || {};
       <th>RMSD</th>\
     </tr>\
     {{#categories}}\
-      <tr><td class="category_label">{{name}}</td></tr>\
+      <tr><td class="category_label">{{category}}</td></tr>\
       {{#results}}\
         <tr class="result_line">\
-          {{^reason}}\
           <td class="result_label">{{name}}:</td>\
+          {{^reason}}\
           <td class="result_value">{{average}}</td>\
           <td>± {{deviation}} ms</td>\
           <td>{{min}}</td>\
@@ -37,7 +37,6 @@ window.metadyn = window.metadyn || {};
           <td>{{rmsd}}</td>\
           {{/reason}}\
           {{#reason}}\
-          <td class="result_label">{{name}}:</td>\
           <td colspan="7" class="result_failed_reason">{{reason}}</td>\
           {{/reason}}\
         </tr>\
@@ -48,4 +47,14 @@ window.metadyn = window.metadyn || {};
       All Scenarios finished\
     {{/finished}}\
   ';
+  Templates.csvResults = '\
+  <textarea class="csv_export">\
+Category;Name;Average;Deviation;Min;Max;Whole;Repeats;RMSD;\
+{{#categories}}\
+{{#results}}\
+\n{{category}};{{name}};{{average}};{{deviation}};{{min}};{{max}};{{whole}};{{repeats}};{{rmsd}};\
+{{/results}}\
+{{/categories}}\
+</textarea>\
+';
 })();

@@ -59,16 +59,18 @@ window.metadyn = window.metadyn || {};
       if (!resultMap[result.scenario.category]) {
         resultMap[result.scenario.category] = [];
         formattedResults.push({
-          name: result.scenario.category,
+          category: result.scenario.category,
           results: resultMap[result.scenario.category]
         });
       }
       resultMap[result.scenario.category].push(formattedResult);
     }
-    document.getElementById("results_cont").innerHTML = Mustache.render(metadyn.Templates.mainResults, {
+    var mustacheData = {
       categories: formattedResults,
       finished: finished
-    });
+    };
+    document.getElementById("results_cont").innerHTML = Mustache.render(metadyn.Templates.mainResults, mustacheData);
+    document.getElementById("csv_cont").innerHTML = Mustache.render(metadyn.Templates.csvResults, mustacheData);
   };
   Main.prototype._next = function () {
     if (this._pointer === this._scenarios.length) {
