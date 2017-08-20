@@ -19,11 +19,11 @@ metadyn.WebGLDrawScenario = function (scenario) {
     asyncPrepare: function (callback, reject) {
       // noinspection JSBitwiseOperatorUsage
       if (this.dim & (this.dim - 1)) {
-        throw "dim "+this.dataDim + " is not power-of-2 !"
+        throw "dim " + this.dataDim + " is not power-of-2 !"
       }
       // noinspection JSBitwiseOperatorUsage
       if (this.dataDim & (this.dataDim - 1)) {
-        throw "dataDim "+this.dataDim + " is not power-of-2 !"
+        throw "dataDim " + this.dataDim + " is not power-of-2 !"
       }
       /**
        *
@@ -38,9 +38,8 @@ metadyn.WebGLDrawScenario = function (scenario) {
       });
       i32array.set(data);
       this.sourceData = i8array;
-
       if (!this.initGL(this.canvas)) {
-        return reject();
+        return callback();
       }
       var self = this;
       return Promise.all([
@@ -78,12 +77,11 @@ metadyn.WebGLDrawScenario = function (scenario) {
         gl = can.getContext("webgl", params)
             || can.getContext("experimental-webgl", params);
       } catch (e) {
-        this.loadFailed(e);
+        this.skipReason = e;
         return false;
       }
       if (!gl) {
-        metadyn.utils.warning("WebGL: Could not initialize WebGL context");
-        this.loadFailed();
+        this.skipReason = "WebGL: Could not initialize WebGL context";
         return false;
       }
       gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -250,9 +248,6 @@ metadyn.WebGLDrawScenario = function (scenario) {
     },
     updateCoord: function () {
 
-    },
-    loadFailed: function () {
-      metadyn.utils.warning("WebGL cannot be loaded");
     },
     syncScenario: function () {
       this.draw(this.sourceData, 1);

@@ -9,8 +9,8 @@
 <button id="run_simulation">Execute</button>
 <button id="run_test">Test</button>
 <div id="results_cont"></div>
-<div id="console_cont"></div>
 <div id="image_cont"></div>
+<div id="console_cont"></div>
 <script type="application/javascript" src="js/mustache.min.js"></script>
 <script type="application/javascript" src="js/promise.js"></script>
 <script type="application/javascript" src="js/utils.js"></script>
@@ -53,12 +53,12 @@
     /** @external metadyn */
     var main = new metadyn.Main();
     main.addScenarios(
-        false,
+//        false,
         metadyn.syncTest,
         metadyn.asyncTest
     );
     main.addScenarios(
-        false,
+//        false,
         metadyn.mathMaxArray,
         metadyn.mathMaxTA,
         metadyn.TAReduceGreater
@@ -78,14 +78,14 @@
         metadyn.addRandomScrambled
     );
     main.addScenarios(
-        false,
+//        false,
         metadyn.drawRasterNaive,
-//        metadyn.drawRasterInt32,
-//        metadyn.drawRasterScaleDiscrete
-//        metadyn.drawRaster4Naive,
-//        metadyn.drawRaster4Optimized,
-//        metadyn.drawRaster4Decompose,
-//        metadyn.drawRaster4Rimmed,
+        metadyn.drawRasterInt32,
+        metadyn.drawRasterScaleDiscrete,
+        metadyn.drawRaster4Naive,
+        metadyn.drawRaster4Optimized,
+        metadyn.drawRaster4Decompose,
+        metadyn.drawRaster4Rimmed,
         metadyn.drawWebGL,
         metadyn.drawWebGLContour,
         metadyn.drawRandomValue
