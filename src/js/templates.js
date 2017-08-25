@@ -55,6 +55,11 @@ Category;Name;Average;Deviation;Min;Max;Whole;Repeats;RMSD;\
 \n{{category}};{{name}};{{average}};{{deviation}};{{min}};{{max}};{{whole}};{{repeats}};{{rmsd}};\
 {{/results}}\
 {{/categories}}\
+\
+{{#userClient}}\
+\n\
+{{name}};{{value}};\
+{{/userClient}}\
 </textarea>\
 ';
 })();

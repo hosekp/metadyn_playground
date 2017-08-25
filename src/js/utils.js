@@ -24,6 +24,7 @@ metadyn.utils = {
     for (var i = 0; i < keys.length; i++) {
       first[keys[i]] = second[keys[i]];
     }
+    return first;
   },
   _initConsole: function () {
     this._consoleElement = document.getElementById("console_cont");

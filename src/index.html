@@ -21,6 +21,7 @@
 <script type="application/javascript" src="js/manual_tests.js"></script>
 <script type="application/javascript" src="js/scenario_base.js"></script>
 <script type="application/javascript" src="js/dom_code.js"></script>
+<script type="application/javascript" src="js/browser_detection.js"></script>
 <script type="application/javascript" src="js/scenarios/basic/sync_test.js"></script>
 <script type="application/javascript" src="js/scenarios/basic/async_test.js"></script>
 <script type="application/javascript" src="js/scenarios/max/math_max.js"></script>
@@ -55,12 +56,12 @@
     /** @external metadyn */
     var main = new metadyn.Main();
     main.addScenarios(
-//        false,
+        false,
         metadyn.syncTest,
         metadyn.asyncTest
     );
     main.addScenarios(
-//        false,
+        false,
         metadyn.mathMaxArray,
         metadyn.mathMaxTA,
         metadyn.TAReduceGreater
@@ -80,7 +81,7 @@
         metadyn.addRandomScrambled
     );
     main.addScenarios(
-//        false,
+        false,
         metadyn.drawRasterNaive,
         metadyn.drawRasterInt32,
         metadyn.drawRasterScaleDiscrete,

@@ -65,9 +65,21 @@ window.metadyn = window.metadyn || {};
       }
       resultMap[result.scenario.category].push(formattedResult);
     }
+    if (finished) {
+      var userClientObject = metadyn.utils.extend(metadyn.BrowserDetection(), {
+        platform: navigator.platform,
+        product: navigator.product,
+        hardwareConcurrency: navigator.hardwareConcurrency,
+        language: navigator.language
+      });
+      var userClient = Object.getOwnPropertyNames(userClientObject).map(function (key) {
+        return {name: key, value: userClientObject[key]};
+      });
+    }
     var mustacheData = {
       categories: formattedResults,
-      finished: finished
+      finished: finished,
+      userClient: userClient
     };
     document.getElementById("results_cont").innerHTML = Mustache.render(metadyn.Templates.mainResults, mustacheData);
     document.getElementById("csv_cont").innerHTML = Mustache.render(metadyn.Templates.csvResults, mustacheData);

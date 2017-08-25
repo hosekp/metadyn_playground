@@ -90,6 +90,7 @@
         this.syncScenario();
         endTimestamp = performance.now();
         var diff = endTimestamp - startTimestamp;
+        // console.log(this.name+": "+diff.toFixed(1)+"   "+i );
         sum += diff;
         if (max < diff) max = diff;
         if (min > diff) min = diff;
