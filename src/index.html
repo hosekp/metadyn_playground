@@ -9,8 +9,9 @@
 <button id="run_simulation">Execute</button>
 <button id="run_test">Test</button>
 <div id="results_cont"></div>
-<div id="console_cont"></div>
 <div id="image_cont"></div>
+<div id="csv_cont"></div>
+<div id="console_cont"></div>
 <script type="application/javascript" src="js/mustache.min.js"></script>
 <script type="application/javascript" src="js/promise.js"></script>
 <script type="application/javascript" src="js/utils.js"></script>
@@ -19,6 +20,8 @@
 <script type="application/javascript" src="js/templates.js"></script>
 <script type="application/javascript" src="js/manual_tests.js"></script>
 <script type="application/javascript" src="js/scenario_base.js"></script>
+<script type="application/javascript" src="js/dom_code.js"></script>
+<script type="application/javascript" src="js/browser_detection.js"></script>
 <script type="application/javascript" src="js/scenarios/basic/sync_test.js"></script>
 <script type="application/javascript" src="js/scenarios/basic/async_test.js"></script>
 <script type="application/javascript" src="js/scenarios/max/math_max.js"></script>
@@ -35,6 +38,7 @@
 <script type="application/javascript" src="js/scenarios/add/blob_10_v_1.js"></script>
 <script type="application/javascript" src="js/scenarios/add/web_gl.js"></script>
 <script type="application/javascript" src="js/scenarios/add/add_random_position.js"></script>
+<script type="application/javascript" src="js/scenarios/add/add_random_values.js"></script>
 <script type="application/javascript" src="js/scenarios/draw/draw_scenario.js"></script>
 <script type="application/javascript" src="js/scenarios/draw/web_gl_scenario.js"></script>
 <script type="application/javascript" src="js/scenarios/draw/raster_naive.js"></script>
@@ -73,7 +77,8 @@
         metadyn.addBlob4v1,
         metadyn.addBlob10v1,
         metadyn.addWebGl,
-        metadyn.addRandomPosition
+        metadyn.addRandomPosition,
+        metadyn.addRandomScrambled
     );
     main.addScenarios(
 //        false,
@@ -88,10 +93,7 @@
         metadyn.drawWebGLContour,
         metadyn.drawRandomValue
     );
-    //  document.getElementById("run_simulation").addEventListener("click",main.execute.bind(main));
-    document.getElementById("run_test").addEventListener("click", metadyn.tests.executeTest.bind(main));
-    setTimeout(main.execute.bind(main), 1000);
-    //  main.execute();
+    metadyn.main = main;
   })(metadyn);
 </script>
 </body>

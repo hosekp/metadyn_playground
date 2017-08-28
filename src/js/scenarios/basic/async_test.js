@@ -17,6 +17,7 @@
   };
   scenario.asyncPrepare = function (callback) {
     setTimeout(callback, 100);
+    this.data=[];
   };
   /**
    *
