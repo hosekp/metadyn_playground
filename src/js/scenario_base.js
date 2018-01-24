@@ -75,8 +75,8 @@
    * @return {Promise.<Result|FailedResult>}
    */
   Scenario.prototype.execute = function () {
-    if (this.skipReason){
-      return Promise.resolve({scenario:this,reason:this.skipReason});
+    if (this.skipReason) {
+      return Promise.resolve({scenario: this, reason: this.skipReason});
     }
     var startTimestamp, endTimestamp, resultData;
     if (this.syncScenario !== emptyFunction) {
@@ -191,7 +191,7 @@
   Scenario.prototype.compareResult = function (result, correct) {
     correct = correct || this.correctResult;
     if (correct === null) return false;
-    if (!result) {
+    if (result === null || result === undefined) {
       throw this.name + ": result is " + result;
     }
     if (result === correct) return true;
@@ -200,8 +200,14 @@
         throw this.name + ": result.length is different (" + result.length + "!=" + correct.length + ")";
       }
       for (var i = 0; i < result.length; i++) {
-        if (result[i] !== correct[i]) {
-          throw this.name + ": value at " + i + " is different (" + result[i] + "!=" + correct[i] + ")";
+        if (typeof result[i] === "object") {
+          if (JSON.stringify(result[i]) !== JSON.stringify(correct[i])) {
+            throw this.name + ": value at " + i + " is different (" + result[i] + "!=" + correct[i] + ")";
+          }
+        } else {
+          if (result[i] !== correct[i]) {
+            throw this.name + ": value at " + i + " is different (" + result[i] + "!=" + correct[i] + ")";
+          }
         }
       }
       return true;
@@ -217,7 +223,7 @@
 
   //####################################################################################################################
   metadyn.utils.extend(Scenario.prototype, {
-  blobIndex: 0,
+    blobIndex: 0,
     getX: function () {
       // return 1;
       return [0.2, 0.2, 0.2, 0.5, 0.5, 0.5, 0.8, 0.8, 0.8][this.blobIndex++ % 9];
@@ -249,11 +255,18 @@
       canvas.width = this.dim;
       return canvas;
     },
+    colorScale: function (d) {
+      var sigma = 1000.0, hei = 380.0;
+      return (255 << 24) |
+          (Math.min(Math.max(hei - Math.abs(d - 0.77) * sigma, 0.0), 255.0) << 16) |
+          (Math.min(Math.max(hei - Math.abs(d - 0.49) * sigma, 0.0), 255.0) << 8) |
+          Math.min(Math.max(hei - Math.abs(d - 0.23) * sigma, 0.0), 255.0);
+    },
     /**
      * @return {HTMLCanvasElement}
      */
     prepareExportCanvas: function (dataSize) {
-      var size =this.exportCanvasSize;
+      var size = this.exportCanvasSize;
       dataSize = dataSize || size;
       var canvas = this.createCanvas();
       canvas.setAttribute("width", dataSize.toString());

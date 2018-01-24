@@ -47,13 +47,6 @@ metadyn.AddScenario = function (scenario) {
       imageData.data.set(new Uint8Array(int32array.buffer));
       ctx.putImageData(imageData, 0, 0);
       document.getElementById("image_cont").appendChild(canvas);
-    },
-    colorScale: function (d) {
-      var sigma = 1000.0, hei = 380.0;
-      return (255 << 24) |
-          (Math.min(Math.max(hei - Math.abs(d - 0.77) * sigma, 0.0), 255.0) << 16) |
-          (Math.min(Math.max(hei - Math.abs(d - 0.49) * sigma, 0.0), 255.0) << 8) |
-          Math.min(Math.max(hei - Math.abs(d - 0.23) * sigma, 0.0), 255.0);
     }
   };
   metadyn.utils.extend(scenario, AddScenario);
