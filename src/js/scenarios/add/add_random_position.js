@@ -1,3 +1,4 @@
+"use strict";
 (function () {
   var scenario = new metadyn.Scenario("Add random position", 'Add');
   metadyn.AddScenario(scenario);

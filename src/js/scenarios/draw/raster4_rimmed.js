@@ -1,5 +1,5 @@
+"use strict";
 (function () {
-  "use strict";
   var scenario = new metadyn.Scenario("Raster 4 rimmed", 'Draw');
   metadyn.DrawScenario(scenario);
   scenario.prepare = function () {

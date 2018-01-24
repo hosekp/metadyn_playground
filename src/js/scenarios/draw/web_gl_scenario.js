@@ -1,10 +1,10 @@
+"use strict";
 /**
  *
  * @param {Scenario} scenario
  * @constructor
  */
 metadyn.WebGLDrawScenario = function (scenario) {
-  "use strict";
   metadyn.DrawScenario(scenario);
   metadyn.utils.extend(scenario, {
     g1: null,

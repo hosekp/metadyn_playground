@@ -1,3 +1,4 @@
+"use strict";
 (function () {
   var scenario = new metadyn.Scenario("Add blob 1:1", 'Add');
   metadyn.AddScenario(scenario);

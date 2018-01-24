@@ -1,3 +1,4 @@
+"use strict";
 document.addEventListener("DOMContentLoaded", function (event) {
   var main = metadyn.main;
   //  document.getElementById("run_simulation").addEventListener("click",main.execute.bind(main));

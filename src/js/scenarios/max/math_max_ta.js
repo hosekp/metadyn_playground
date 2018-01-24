@@ -1,3 +1,4 @@
+"use strict";
 (function () {
   var scenario = new metadyn.Scenario("Math.max(TA)", 'Max');
   scenario.prepare = function () {

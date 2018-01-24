@@ -1,3 +1,4 @@
+"use strict";
 (function (metadyn) {
   metadyn.tests = {
     colorScale: function () {

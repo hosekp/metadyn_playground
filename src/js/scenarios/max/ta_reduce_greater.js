@@ -1,3 +1,4 @@
+"use strict";
 (function () {
   var scenario = new metadyn.Scenario("TA.reduce(a>b)", 'Max');
   scenario.prepare = function () {

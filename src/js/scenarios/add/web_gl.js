@@ -1,5 +1,5 @@
+"use strict";
 (function () {
-  "use strict";
   var scenario = new metadyn.Scenario("Add WebGL blob", 'Add');
   /**
    * @typedef {{dims:Array.<int>,getArr:Function}} Space

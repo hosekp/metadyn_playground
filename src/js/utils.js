@@ -1,5 +1,5 @@
-window.metadyn = window.metadyn || {};
 "use strict";
+window.metadyn = window.metadyn || {};
 metadyn.utils = {
   logLevel: 4,
   _previousLogs: [],

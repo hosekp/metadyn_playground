@@ -1,3 +1,4 @@
+"use strict";
 (function () {
   var scenario = new metadyn.Scenario("Add gaussian TA dimSigma", 'Add');
   metadyn.AddScenario(scenario);

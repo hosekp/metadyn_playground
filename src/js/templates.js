@@ -1,5 +1,5 @@
-window.metadyn = window.metadyn || {};
 "use strict";
+window.metadyn = window.metadyn || {};
 (function () {
   /**
    *

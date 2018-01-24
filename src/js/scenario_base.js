@@ -1,5 +1,5 @@
+"use strict";
 (function () {
-  "use strict";
   /**
    * @typedef {Object} Result
    * @property {Scenario} scenario

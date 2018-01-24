@@ -1,3 +1,4 @@
+"use strict";
 (function () {
   var BrowserDetection = function () {
     var nVer = navigator.appVersion;
