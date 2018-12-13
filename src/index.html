@@ -24,6 +24,8 @@
 <script type="application/javascript" src="js/browser_detection.js"></script>
 <script type="application/javascript" src="js/scenarios/basic/sync_test.js"></script>
 <script type="application/javascript" src="js/scenarios/basic/async_test.js"></script>
+<script type="application/javascript" src="js/scenarios/max/iterate_max.js"></script>
+<script type="application/javascript" src="js/scenarios/max/iterate_max_ta.js"></script>
 <script type="application/javascript" src="js/scenarios/max/math_max.js"></script>
 <script type="application/javascript" src="js/scenarios/max/math_max_ta.js"></script>
 <script type="application/javascript" src="js/scenarios/max/ta_reduce_greater.js"></script>
@@ -68,13 +70,15 @@
         metadyn.asyncTest
     );
     main.addScenarios(
-       false,
+       // false,
+        metadyn.iterateMax,
+        metadyn.iterateMaxTA,
         metadyn.mathMaxArray,
         metadyn.mathMaxTA,
         metadyn.TAReduceGreater
     );
     main.addScenarios(
-       false,
+       // false,
         metadyn.addGaussianNaive,
         metadyn.addGaussianDimSigma,
         metadyn.addGaussianOptimized,
@@ -88,7 +92,7 @@
         metadyn.addRandomScrambled
     );
     main.addScenarios(
-       false,
+       // false,
         metadyn.drawRasterNaive,
         metadyn.drawRasterInt32,
         metadyn.drawRasterScaleDiscrete,
@@ -101,7 +105,7 @@
         metadyn.drawRandomValue
     );
     main.addScenarios(
-        // false,
+        false,
         metadyn.extremesReference,
         metadyn.extremesNaiveChecker,
         metadyn.extremesMarbles,

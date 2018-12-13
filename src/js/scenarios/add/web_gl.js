@@ -371,9 +371,9 @@
       }
       var intData = this.space1.getArr(32);
       var INTER = this.INTER;
-      return Array.from(intData, function (value) {
+      return Array.prototype.slice.call(intData.map(function (value) {
         return value / INTER;
-      })
+      }));
     },
     checkResult: function () {
       this.compareResult(this.space1.getArr(32).length, this.mainSize * this.mainSize);

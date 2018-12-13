@@ -35,12 +35,5 @@
         (Math.min(Math.max(hei - Math.abs(d - 0.49) * sigma, 0.0), 255.0) << 8) |
         Math.min(Math.max(hei - Math.abs(d - 0.23) * sigma, 0.0), 255.0);
   };
-  scenario.split = function (c) {
-    var buffer = new ArrayBuffer(4);
-    var work32 = new Uint32Array(buffer);
-    work32[0]=c;
-    return Array.from(new Uint8ClampedArray(buffer));
-  };
-
   metadyn.drawRasterInt32 = scenario;
 })();

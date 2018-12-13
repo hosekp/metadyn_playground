@@ -26,7 +26,9 @@ window.metadyn = window.metadyn || {};
   Main.prototype.execute = function () {
     this.comparators = new metadyn.Comparators();
     this._pointer = 0;
-    this._next();
+    this._next().catch(function (e) {
+      throw e;
+    });
   };
   /**
    *

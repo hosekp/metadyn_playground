@@ -48,9 +48,10 @@
     this.comparable = false;
     this.wholeSeedCycle = 1;
     this.exportCanvasSize = 50;
+    this.time = 5000; // milliseconds
   }
 
-  Scenario.prototype.maxRepeats = 100000;
+  Scenario.prototype.maxRepeats = 1000000;
 
   var emptyFunction = function () {
   };
@@ -126,7 +127,8 @@
     }
   };
   Scenario.prototype._shouldBreakRepeats = function (i, time) {
-    return i >= this.maxRepeats || time > 1000 && i >= 10 || time > 5000;
+    // return i >= this.maxRepeats || time > 1000 && i >= 10 || time > 5000;
+    return time > this.time;
   };
   /** @type {EmptyCallback} */
   Scenario.prototype.prepare = emptyFunction;
@@ -216,7 +218,7 @@
   };
 
   Scenario.prototype.getResult = function () {
-    return Array.from(this.data);
+    return Array.prototype.slice.call(this.data);
   };
 
   Scenario.prototype.correctResult = null;

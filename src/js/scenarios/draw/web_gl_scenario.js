@@ -33,7 +33,7 @@ metadyn.WebGLDrawScenario = function (scenario) {
       var data = this.prepareData(this.dataDim);
       var i8array = new Uint8Array(this.dataDim * this.dataDim * 4);
       var i32array = new Uint32Array(i8array.buffer);
-      data = Array.from(data, function (value) {
+      data = data.map(function (value) {
         return Math.floor(value * 16384)
       });
       i32array.set(data);
