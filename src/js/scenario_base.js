@@ -127,8 +127,8 @@
     }
   };
   Scenario.prototype._shouldBreakRepeats = function (i, time) {
-    // return i >= this.maxRepeats || time > 1000 && i >= 10 || time > 5000;
-    return time > this.time;
+    return i >= this.maxRepeats || time > 1000 && i >= 10 || time > 5000;
+    // return time > this.time;
   };
   /** @type {EmptyCallback} */
   Scenario.prototype.prepare = emptyFunction;

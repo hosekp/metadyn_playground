@@ -12,6 +12,11 @@ metadyn.AddScenario = function (scenario) {
     sigma: 0.1,
     comparable: true,
     wholeSeedCycle: 9,
+
+    prepareSampleDataArray: function(){
+      this.data = this.prepareDataArray(this.mainSize);
+    },
+
     /**
      *
      * @param {Array.<number>} data

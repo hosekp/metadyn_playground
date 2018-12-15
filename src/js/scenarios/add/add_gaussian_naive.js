@@ -3,10 +3,7 @@
   var scenario = new metadyn.Scenario("Add gaussian naive", 'Add');
   metadyn.AddScenario(scenario);
   scenario.prepare = function () {
-    var data = [];
-    data.length = this.mainSize*this.mainSize;
-    data.fill(0);
-    this.data = data;
+    this.prepareSampleDataArray();
   };
   scenario.syncScenario = function syncTest() {
     var data = this.data;

@@ -4,6 +4,10 @@
   scenario.prepare = function () {
     var buffer = new ArrayBuffer(125000 * 4);
     var int32View = new Int32Array(buffer);
+    if (!int32View.reduce) {
+      this.skipReason = "cannot use TA.reduce";
+      return;
+    }
     for (var i = 0; i < int32View.length; i++) {
       int32View[i] = i;
     }

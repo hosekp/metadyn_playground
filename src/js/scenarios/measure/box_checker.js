@@ -9,15 +9,14 @@
     var resol = this.size;
     var ix, iy = 0;
     var extremes = [];
-    var steps = 2;
+    var steps = 10;
     for (ix = 0; ix < steps; ix++) {
       var x = ix / steps;
       for (iy = 0; iy < steps; iy++) {
-        var y = iy / steps;
         var sx = Math.floor(x * resol);
-        var sy = Math.floor((1 - y - 1 / steps) * resol);
+        var sy = resol - Math.floor((iy + 1) / steps * resol);
         var ex = Math.floor((x + 1 / steps) * resol);
-        var ey = Math.floor((1 - y) * resol);
+        var ey = resol - Math.floor(iy / steps * resol);
         var ipos = this.findBoxedExtremes2(sx, sy, ex, ey);
         if (!ipos) continue;
         extremes.push([[
@@ -34,26 +33,22 @@
     trans = this.data;
     if (trans === null) return null;
     resol = this.size;
-    var yMins = [];
+    var maxIndex = 0;
+    var max = -Infinity;
     for (var y = sy; y < ey; y++) {
-      var yMin = trans.subarray(sx + y * resol, ex + y * resol).reduce(function(prev, curr) {
-        return (prev > curr) ? prev : curr;
-      }, -Infinity);
-      // var yMin = Math.max.apply(Math, trans.subarray(sx + y * resol, ex + y * resol));
-      yMins.push(yMin);
+      var end = ex + y * resol;
+      for (var i = sx + y * resol; i < end; i++) {
+        if (trans[i] > max) {
+          maxIndex = i;
+          max = trans[i];
+        }
+      }
     }
-    var min = Math.max.apply(Math, yMins);
-    for (var i = 0; i < yMins.length; i++) {
-      if (yMins[i] === min) break;
-    }
-    y = sy + i;
+    y = Math.floor(maxIndex / resol);
+    var x = maxIndex % resol;
+    // console.log({x:x,y:y});
     if (y === 0) return null;
     if (y === resol - 1) return null;
-    var row = trans.subarray(sx + y * resol, ex + y * resol);
-    for (i = 0; i < row.length; i++) {
-      if (row[i] === min) break;
-    }
-    var x = i + sx;
     if (x === 0) return null;
     if (x === resol - 1) return null;
     var val = trans[x + y * resol];
@@ -81,6 +76,7 @@
     if (y === ey - 1) {
       if (val <= trans[x + (y + 1) * resol]) return null;
     }
+    // console.log({x:x,y:y,res:"returned"});
     return {x: x, y: y};
   };
 
