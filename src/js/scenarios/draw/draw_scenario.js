@@ -20,7 +20,7 @@ metadyn.DrawScenario = function (scenario) {
       // return this.prepareRasterData(dim);
       var data = [];
       data.length = dim * dim;
-      data.fill(0);
+      metadyn.utils.fillArray(data, 0);
       var height = this.height;
       var sigma = this.sigma;
       for (var i = 0; i < 9; i++) {
@@ -41,7 +41,7 @@ metadyn.DrawScenario = function (scenario) {
     prepareRasterData: function (dim) {
       var data = [];
       data.length = dim * dim;
-      data.fill(0);
+      metadyn.utils.fillArray(data, 0);
       for (var y = 0; y < dim; y++) {
         for (var x = 0; x < dim; x++) {
           data[y * dim + x] = 0.1 + (x % 2) * 0.3 + (y % 2) * 0.2 + x / dim * 0.25 + y / dim * 0.15;

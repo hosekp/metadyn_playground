@@ -13,7 +13,6 @@ metadyn.MeasureScenario = function (scenario) {
     prepareData: function (dim, height) {
       var array = new Float32Array(dim * dim);
       height = height || 1;
-      array.fill(0);
       var i, j;
       var blobs = [];
       var dimSigma2 = this.sigma * this.sigma * dim * dim;

@@ -3,9 +3,7 @@
   var scenario = new metadyn.Scenario("Add gaussian TA naive", 'Add');
   metadyn.AddScenario(scenario);
   scenario.prepare = function () {
-    var int32View = new Float32Array(this.mainSize * this.mainSize);
-    int32View.fill(0);
-    this.data = int32View;
+    this.data = new Float32Array(this.mainSize * this.mainSize);
   };
   scenario.syncScenario = function syncTest() {
     var data = this.data;

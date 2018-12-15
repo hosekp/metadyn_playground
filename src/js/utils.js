@@ -54,34 +54,40 @@ metadyn.utils = {
   error: function (text) {
     this._addText(text, 1)
   },
-  findMaxMin:function(array,alsoMin){
-    var max,min=0,len=array.length,
-        maxs,mins,i,subarr,isTyped;
-    isTyped=!!array.subarray;
-    if(len<124000){
-      max=Math.max.apply(null,array);
-      if(alsoMin){
-        min=Math.min.apply(null,array);
+  findMaxMin: function (array, alsoMin) {
+    var max, min = 0, len = array.length,
+        maxs, mins, i, subarr, isTyped;
+    isTyped = !!array.subarray;
+    if (len < 124000) {
+      max = Math.max.apply(null, array);
+      if (alsoMin) {
+        min = Math.min.apply(null, array);
       }
-    }else{
-      maxs=[];mins=[];
-      for(i=0;i<len/124000;i+=1){
-        if(isTyped){
-          subarr=array.subarray(i*124000,(i+1)*124000);
-        }else{
-          subarr=array.slice(i*124000,(i+1)*124000);
+    } else {
+      maxs = [];
+      mins = [];
+      for (i = 0; i < len / 124000; i += 1) {
+        if (isTyped) {
+          subarr = array.subarray(i * 124000, (i + 1) * 124000);
+        } else {
+          subarr = array.slice(i * 124000, (i + 1) * 124000);
         }
-        maxs.push(Math.max.apply(null,subarr));
-        if(alsoMin){
-          mins.push(Math.min.apply(null,subarr));
+        maxs.push(Math.max.apply(null, subarr));
+        if (alsoMin) {
+          mins.push(Math.min.apply(null, subarr));
         }
       }
-      max=Math.max.apply(null,maxs);
-      if(alsoMin){
-        min=Math.min.apply(null,mins);
+      max = Math.max.apply(null, maxs);
+      if (alsoMin) {
+        min = Math.min.apply(null, mins);
       }
     }
-    return [max,min];
+    return [max, min];
+  },
+  fillArray: function (array, value) {
+    for(var i=0;i<array.length;i++){
+      array[i]=value;
+    }
   }
 
 };
