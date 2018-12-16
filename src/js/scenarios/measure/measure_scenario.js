@@ -14,12 +14,12 @@ metadyn.MeasureScenario = function (scenario) {
       var array = new Float32Array(dim * dim);
       height = height || 1;
       var i, j;
-      var blobs = [];
+      // var blobs = [];
       var dimSigma2 = this.sigma * this.sigma * dim * dim;
       for (var b = 0; b < 9; b++) {
         var x = this.getX();
         var y = this.getY();
-        blobs.push([[x, y]]);
+        // blobs.push([[x, y]]);
         x*=dim;
         y*=dim;
         for (i = 0; i < dim; i++) {
@@ -30,7 +30,7 @@ metadyn.MeasureScenario = function (scenario) {
       }
       this.data = array;
 
-      this.targetResult = blobs;
+      // this.targetResult = blobs;
     },
     exportCanvas: function (data) {
       var dim = this.size;
