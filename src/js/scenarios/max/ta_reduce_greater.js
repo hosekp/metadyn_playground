@@ -9,7 +9,7 @@
       return;
     }
     for (var i = 0; i < int32View.length; i++) {
-      int32View[i] = i;
+      int32View[i] = (i * 1578) % 24568;
     }
     this.data = int32View;
   };
@@ -17,7 +17,7 @@
     var result = this.data.reduce(function (a, b) {
       return a < b ? b : a;
     });
-    this.checkResult(result, 124999);
+    this.compareResult(result, 24566);
   };
 
   metadyn.TAReduceGreater = scenario;

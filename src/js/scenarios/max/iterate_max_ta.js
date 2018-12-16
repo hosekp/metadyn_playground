@@ -5,7 +5,7 @@
     var buffer = new ArrayBuffer(125000 * 4);
     var int32View = new Int32Array(buffer);
     for (var i = 0; i < int32View.length; i++) {
-      int32View[i] = i;
+      int32View[i] = (i * 1578) % 24568;
     }
     this.data = int32View;
   };
@@ -17,7 +17,7 @@
         max = data[i];
       }
     }
-    this.checkResult(max, 124999);
+    this.compareResult(max, 24566);
   };
   metadyn.iterateMaxTA = scenario;
 })();
